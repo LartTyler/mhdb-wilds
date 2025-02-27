@@ -22,3 +22,6 @@ services:
 
     App\Import\Importers\:
         resource: '../src/Import/Importers'
+
+    App\Response\Listeners\:
+        resource: '../src/Response/Listeners'
