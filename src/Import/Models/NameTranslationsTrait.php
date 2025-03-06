@@ -7,5 +7,5 @@
 		/**
 		 * @var array<Locale::*, string>
 		 */
-		public array $name;
+		public array $names;
 	}

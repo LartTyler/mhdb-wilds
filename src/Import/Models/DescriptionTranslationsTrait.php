@@ -7,5 +7,5 @@
 		/**
 		 * @var array<Locale::*, string>
 		 */
-		public array $description;
+		public array $descriptions;
 	}

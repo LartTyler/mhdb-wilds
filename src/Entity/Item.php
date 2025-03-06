@@ -26,6 +26,7 @@
 	)]
 	class Item implements EntityInterface {
 		use EntityTrait;
+		use GameIdTrait;
 
 		#[ORM\Column(options: ['unsigned' => true])]
 		private int $rarity;
@@ -50,7 +51,8 @@
 		#[ORM\OneToMany(mappedBy: 'output', targetEntity: ItemRecipe::class, cascade: ['all'], orphanRemoval: true)]
 		private Collection&Selectable $recipes;
 
-		public function __construct(string $name, int $rarity) {
+		public function __construct(int $gameId, string $name, int $rarity) {
+			$this->gameId = $gameId;
 			$this->name = $name;
 			$this->rarity = $rarity;
 
@@ -107,5 +109,10 @@
 		 */
 		public function getRecipes(): Selectable&Collection {
 			return $this->recipes;
+		}
+
+		public function addRecipe(int $outputAmount): ItemRecipe {
+			$this->getRecipes()->add($recipe = new ItemRecipe($this, $outputAmount));
+			return $recipe;
 		}
 	}
