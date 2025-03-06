@@ -8,9 +8,11 @@
 	use Doctrine\ORM\EntityManagerInterface;
 	use Symfony\Component\Console\Attribute\AsCommand;
 	use Symfony\Component\Console\Command\Command;
+	use Symfony\Component\Console\Helper\ProgressIndicator;
 	use Symfony\Component\Console\Input\InputArgument;
 	use Symfony\Component\Console\Input\InputInterface;
 	use Symfony\Component\Console\Input\InputOption;
+	use Symfony\Component\Console\Output\ConsoleOutputInterface;
 	use Symfony\Component\Console\Output\OutputInterface;
 	use Symfony\Component\Console\Style\SymfonyStyle;
 	use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
@@ -51,30 +53,38 @@
 		}
 
 		protected function execute(InputInterface $input, OutputInterface $output): int {
-			$io = new SymfonyStyle($input, $output);
+			if (!$output instanceof ConsoleOutputInterface)
+				throw new \LogicException('This command requires a ' . ConsoleOutputInterface::class);
 
 			$filters = array_map(fn(string $item) => strtolower($item), $input->getOption('filter'));
-
 			$batch = new BatchManager($this->entityManager, (int)$input->getOption('batch-size'));
-			$context = new ImportContext($batch, $input->getArgument('data-root'));
 
-			$io->progressStart();
+			$context = new ImportContext(
+				$batch,
+				$input->getArgument('data-root'),
+				new ProgressIndicator($output->section()),
+				$output,
+			);
 
 			foreach ($this->importers as $importer) {
-				if (!$this->shouldImporterRun($importer::class, $filters))
-					continue;
+				$displayName = '<fg=cyan>' . $importer::class . '</>';
+				$context->progressIndicator->start('Running ' . $displayName);
 
-				if ($importer instanceof ImporterInterface)
-					$importer->import($context);
-				else
-					$importer($context);
+				if (!$this->shouldImporterRun($importer::class, $filters)) {
+					$context->progressIndicator->finish('Skipped ' . $displayName, '<fg=bright-red>⨯</>');
+					continue;
+				}
+
+				$fn = $importer instanceof ImporterInterface ? [$importer, 'import'] : $importer;
+				$fn($context);
+
+				// Ensure we've cleaned up an importer's progress bar, if there is one.
+				$context->progressFinish();
 
 				$batch->dispatch();
 
-				$io->progressAdvance();
+				$context->progressIndicator->finish('Finished ' . $displayName, '<info>✓</>');
 			}
-
-			$io->progressFinish();
 
 			return static::SUCCESS;
 		}
