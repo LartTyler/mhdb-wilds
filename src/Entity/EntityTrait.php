@@ -7,7 +7,7 @@
 		#[ORM\Id]
 		#[ORM\GeneratedValue]
 		#[ORM\Column(options: ['unsigned' => true])]
-		protected ?int $id;
+		protected ?int $id = null;
 
 		public function getId(): ?int {
 			return $this->id;

@@ -9,6 +9,7 @@
 	use App\Entity\MaterialCost;
 	use App\Entity\Skill;
 	use App\Entity\SkillRank;
+	use App\Game\ArmorKind;
 	use App\Game\Rank;
 	use App\I18n\Locale;
 	use App\Import\AsImporter;
@@ -36,9 +37,15 @@
 				},
 			);
 
+			// An array of game IDs from all visited armor sets.
+			/** @var int[] $visitedSets */
+			$visitedSets = [];
+
 			/** @var SeriesModel $data */
 			foreach ($importData as $data) {
 				$context->progressAdvance();
+
+				$visitedSets[] = $data->id;
 
 				$set = $this->entityManager->getRepository(ArmorSet::class)->findOneBy(
 					[
@@ -57,8 +64,26 @@
 				if ($data->groupBonus)
 					$set->setGroupBonus($this->bonus($data->groupBonus, $stagedBonuses));
 
-				foreach ($data->pieces as $armorData)
-					$this->piece($set, $armorData, $data->rarity);
+				// An array of armor kinds visited while importing pieces.
+				/** @var ArmorKind[] $visitedPieces */
+				$visitedPieces = [];
+
+				foreach ($data->pieces as $armorData) {
+					$piece = $this->piece($set, $armorData, $data->rarity);
+					$visitedPieces[] = $piece->getKind();
+				}
+
+				// Purge armor pieces not visited during the import, but only if we have an existing armor set.
+				if ($set->getId() !== null) {
+					$this->entityManager->createQueryBuilder()
+						->delete(Armor::class, 'armor')
+						->where('armor.armorSet = :set')
+						->andWhere('armor.kind NOT IN (:visited)')
+						->setParameter('set', $set)
+						->setParameter('visited', $visitedPieces)
+						->getQuery()
+						->execute();
+				}
 
 				$context->batch->increment(
 					($set->getBonus() ? $set->getBonus()->getRanks()->count() + 1 : 0) +
@@ -75,6 +100,14 @@
 
 			$context->batch->dispatch();
 			$batchHook->disconnect();
+
+			// Purge armor sets that weren't part of the import.
+			$this->entityManager->createQueryBuilder()
+				->delete(ArmorSet::class, 'armor_set')
+				->where('armor_set.gameId NOT IN (:visited)')
+				->setParameter('visited', $visitedSets)
+				->getQuery()
+				->execute();
 		}
 
 		protected function piece(ArmorSet $set, ArmorModel $data, int $rarity): Armor {
@@ -180,11 +213,16 @@
 				$visited[$material->getItem()->getId()] = true;
 			}
 
+			/** @var MaterialCost[] $toRemove */
+			$toRemove = [];
+
 			/** @var MaterialCost $material */
 			foreach ($crafting->getMaterials() as $material) {
 				if (!isset($visited[$material->getItem()->getId()]))
 					$this->entityManager->remove($material);
 			}
+
+			$crafting->removeMaterials(...$toRemove);
 
 			return $armor;
 		}
@@ -209,7 +247,7 @@
 				[
 					'skill' => $skill,
 				],
-			) ?? $stagedBonuses[$skill->getId()];
+			) ?? $stagedBonuses[$skill->getId()] ?? null;
 
 			if (!$bonus) {
 				$bonus = new ArmorSetBonus($skill);

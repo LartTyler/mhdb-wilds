@@ -78,6 +78,17 @@
 			return $material;
 		}
 
+		public function removeMaterial(MaterialCost $material): bool {
+			return $this->getMaterials()->removeElement($material);
+		}
+
+		public function removeMaterials(MaterialCost ...$materials): static {
+			foreach ($materials as $material)
+				$this->removeMaterial($material);
+
+			return $this;
+		}
+
 		public function getZennyCost(): int {
 			return $this->zennyCost;
 		}
