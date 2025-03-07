@@ -11,9 +11,6 @@
 		#[ORM\Column(options: ['unsigned' => true])]
 		private int $max = 0;
 
-		#[ORM\Column(options: ['unsigned' => true])]
-		private int $augmented = 0;
-
 		public function getBase(): int {
 			return $this->base;
 		}
@@ -29,15 +26,6 @@
 
 		public function setMax(int $max): static {
 			$this->max = $max;
-			return $this;
-		}
-
-		public function getAugmented(): int {
-			return $this->augmented;
-		}
-
-		public function setAugmented(int $augmented): static {
-			$this->augmented = $augmented;
 			return $this;
 		}
 	}

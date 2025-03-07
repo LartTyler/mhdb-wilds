@@ -1,12 +1,14 @@
 <?php
 	namespace App\Entity;
 
-	use DaybreakStudios\RestBundle\Entity\AsCrudEntity;
 	use App\Api\Models\ArmorSetModel;
 	use App\Api\Transformers\ArmorSetTransformer;
+	use App\Game\ArmorKind;
+	use DaybreakStudios\RestBundle\Entity\AsCrudEntity;
 	use DaybreakStudios\Utility\DoctrineEntities\EntityInterface;
 	use Doctrine\Common\Collections\ArrayCollection;
 	use Doctrine\Common\Collections\Collection;
+	use Doctrine\Common\Collections\Criteria;
 	use Doctrine\Common\Collections\Selectable;
 	use Doctrine\ORM\Mapping as ORM;
 	use Gedmo\Mapping\Annotation\Translatable;
@@ -18,15 +20,29 @@
 		transformer: ArmorSetTransformer::class,
 		dtoClass: ArmorSetModel::class,
 		strict: [
-			'pieces' => [
+			'bonus' => self::STRICT_BONUS,
+			'groupBonus' => self::STRICT_BONUS,
+		],
+	)]
+	class ArmorSet implements EntityInterface {
+		protected const STRICT_BONUS = [
+			'skill' => [
 				'*',
 				'-id',
 				'-name',
 			],
-		],
-	)]
-	class ArmorSet implements EntityInterface {
+			'ranks' => [
+				'skill' => [
+					'skill' => [
+						'*',
+						'-id',
+					],
+				],
+			],
+		];
+
 		use EntityTrait;
+		use GameIdTrait;
 
 		#[Translatable]
 		#[ORM\Column(nullable: true)]
@@ -38,11 +54,16 @@
 		#[ORM\OneToMany(mappedBy: 'armorSet', targetEntity: Armor::class)]
 		private Collection&Selectable $pieces;
 
-		#[ORM\ManyToOne]
+		#[ORM\ManyToOne(targetEntity: ArmorSetBonus::class)]
 		#[ORM\JoinColumn(onDelete: 'SET NULL')]
 		private ?ArmorSetBonus $bonus = null;
 
-		public function __construct(string $name) {
+		#[ORM\ManyToOne(targetEntity: ArmorSetBonus::class)]
+		#[ORM\JoinColumn(onDelete: 'SET NULL')]
+		private ?ArmorSetBonus $groupBonus = null;
+
+		public function __construct(int $gameId, string $name) {
+			$this->gameId = $gameId;
 			$this->name = $name;
 			$this->pieces = new ArrayCollection();
 		}
@@ -63,12 +84,29 @@
 			return $this->pieces;
 		}
 
+		public function getPiece(ArmorKind $kind): ?Armor {
+			$criteria = Criteria::create()
+				->where(Criteria::expr()->eq('kind', $kind))
+				->setMaxResults(1);
+
+			return $this->getPieces()->matching($criteria)->first() ?: null;
+		}
+
 		public function getBonus(): ?ArmorSetBonus {
 			return $this->bonus;
 		}
 
 		public function setBonus(?ArmorSetBonus $bonus): static {
 			$this->bonus = $bonus;
+			return $this;
+		}
+
+		public function getGroupBonus(): ?ArmorSetBonus {
+			return $this->groupBonus;
+		}
+
+		public function setGroupBonus(?ArmorSetBonus $groupBonus): static {
+			$this->groupBonus = $groupBonus;
 			return $this;
 		}
 	}

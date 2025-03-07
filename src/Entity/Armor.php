@@ -10,8 +10,10 @@
 	use Doctrine\Common\Collections\ArrayCollection;
 	use Doctrine\Common\Collections\Collection;
 	use Doctrine\Common\Collections\Selectable;
+	use Doctrine\DBAL\Types\Types;
 	use Doctrine\ORM\Mapping as ORM;
 	use Gedmo\Mapping\Annotation\Translatable;
+	use Symfony\Component\Serializer\Attribute\Ignore;
 
 	#[ORM\Entity]
 	#[ORM\Table(name: 'armors')]
@@ -20,6 +22,11 @@
 		transformer: ArmorTransformer::class,
 		dtoClass: ArmorModel::class,
 		strict: [
+			'armorSet' => [
+				'*',
+				'-id',
+				'-name',
+			],
 			'skills' => [
 				'skill' => [
 					'ranks',
@@ -37,6 +44,10 @@
 		#[Translatable]
 		#[ORM\Column(nullable: true)]
 		private ?string $name;
+
+		#[Translatable]
+		#[ORM\Column(type: Types::TEXT, nullable: true)]
+		private ?string $description = null;
 
 		#[ORM\Column(enumType: Rank::class)]
 		private Rank $rank;
@@ -100,6 +111,15 @@
 			return $this;
 		}
 
+		public function getDescription(): ?string {
+			return $this->description;
+		}
+
+		public function setDescription(?string $description): static {
+			$this->description = $description;
+			return $this;
+		}
+
 		public function getRank(): Rank {
 			return $this->rank;
 		}
@@ -131,6 +151,17 @@
 		 */
 		public function getSkills(): Selectable&Collection {
 			return $this->skills;
+		}
+
+		public function removeSkill(SkillRank $rank): bool {
+			return $this->skills->removeElement($rank);
+		}
+
+		public function removeSkills(SkillRank ...$ranks): static {
+			foreach ($ranks as $rank)
+				$this->removeSkill($rank);
+
+			return $this;
 		}
 
 		/**
@@ -166,5 +197,10 @@
 		public function setCrafting(?ArmorCrafting $crafting): static {
 			$this->crafting = $crafting;
 			return $this;
+		}
+
+		#[Ignore]
+		public function getOrCreateCrafting(): ArmorCrafting {
+			return $this->crafting ??= new ArmorCrafting($this);
 		}
 	}

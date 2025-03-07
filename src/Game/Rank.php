@@ -4,5 +4,8 @@
 	enum Rank: string {
 		case Low = 'low';
 		case High = 'high';
-		case Master = 'master';
+
+		public static function guess(int $rarity): self {
+			return $rarity <= 4 ? self::Low : self::High;
+		}
 	}

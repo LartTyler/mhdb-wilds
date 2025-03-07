@@ -9,7 +9,8 @@
 	class MaterialCost implements EntityInterface {
 		use EntityTrait;
 
-		#[ORM\ManyToOne]
+		#[ORM\ManyToOne(targetEntity: Item::class)]
+		#[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
 		private Item $item;
 
 		#[ORM\Column(options: ['unsigned' => true])]

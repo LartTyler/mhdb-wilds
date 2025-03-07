@@ -1,15 +1,15 @@
 <?php
 	namespace App\Entity;
 
-	use DaybreakStudios\RestBundle\Entity\AsCrudEntity;
 	use App\Api\Models\ArmorSetBonusModel;
 	use App\Api\Transformers\ArmorSetBonusTransformer;
+	use DaybreakStudios\RestBundle\Entity\AsCrudEntity;
 	use DaybreakStudios\Utility\DoctrineEntities\EntityInterface;
 	use Doctrine\Common\Collections\ArrayCollection;
 	use Doctrine\Common\Collections\Collection;
+	use Doctrine\Common\Collections\Criteria;
 	use Doctrine\Common\Collections\Selectable;
 	use Doctrine\ORM\Mapping as ORM;
-	use Gedmo\Mapping\Annotation\Translatable;
 
 	#[ORM\Entity]
 	#[ORM\Table(name: 'armor_set_bonuses')]
@@ -18,23 +18,19 @@
 		transformer: ArmorSetBonusTransformer::class,
 		dtoClass: ArmorSetBonusModel::class,
 		strict: [
-			'ranks' => [
-				'skill' => [
-					'skill' => [
-						'*',
-						'-id',
-						'-name',
-					],
-				],
+			'skill' => [
+				'*',
+				'-id',
+				'-name',
 			],
 		],
 	)]
 	class ArmorSetBonus implements EntityInterface {
 		use EntityTrait;
 
-		#[Translatable]
-		#[ORM\Column(nullable: true)]
-		private ?string $name;
+		#[ORM\ManyToOne(targetEntity: Skill::class)]
+		#[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+		private Skill $skill;
 
 		/**
 		 * @var Selectable<ArmorSetBonusRank>&Collection<ArmorSetBonusRank>
@@ -42,17 +38,17 @@
 		#[ORM\OneToMany(mappedBy: 'bonus', targetEntity: ArmorSetBonusRank::class, cascade: ['all'], orphanRemoval: true)]
 		private Collection&Selectable $ranks;
 
-		public function __construct(string $name) {
-			$this->name = $name;
+		public function __construct(Skill $skill) {
+			$this->skill = $skill;
 			$this->ranks = new ArrayCollection();
 		}
 
-		public function getName(): ?string {
-			return $this->name;
+		public function getSkill(): Skill {
+			return $this->skill;
 		}
 
-		public function setName(?string $name): static {
-			$this->name = $name;
+		public function setSkill(Skill $skill): static {
+			$this->skill = $skill;
 			return $this;
 		}
 
@@ -61,5 +57,24 @@
 		 */
 		public function getRanks(): Selectable&Collection {
 			return $this->ranks;
+		}
+
+		public function getRank(int $pieces): ?ArmorSetBonusRank {
+			$criteria = Criteria::create()
+				->where(Criteria::expr()->eq('pieces', $pieces))
+				->setMaxResults(1);
+
+			return $this->getRanks()->matching($criteria)->first() ?: null;
+		}
+
+		public function getOrCreateRank(int $pieces, SkillRank $skillRank): ArmorSetBonusRank {
+			$rank = $this->getRank($pieces);
+
+			if (!$rank)
+				$this->getRanks()->add($rank = new ArmorSetBonusRank($this, $pieces, $skillRank));
+			else
+				$rank->setSkill($skillRank);
+
+			return $rank;
 		}
 	}

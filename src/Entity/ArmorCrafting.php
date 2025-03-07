@@ -1,9 +1,9 @@
 <?php
 	namespace App\Entity;
 
-	use DaybreakStudios\RestBundle\Entity\AsCrudEntity;
 	use App\Api\Models\ArmorCraftingModel;
 	use App\Api\Transformers\ArmorCraftingTransformer;
+	use DaybreakStudios\RestBundle\Entity\AsCrudEntity;
 	use DaybreakStudios\Utility\DoctrineEntities\EntityInterface;
 	use Doctrine\Common\Collections\ArrayCollection;
 	use Doctrine\Common\Collections\Collection;
@@ -42,6 +42,7 @@
 		private int $zennyCost;
 
 		public function __construct(Armor $armor) {
+			$this->armor = $armor;
 			$this->materials = new ArrayCollection();
 		}
 
@@ -49,8 +50,32 @@
 			return $this->armor;
 		}
 
+		/**
+		 * @return Collection<MaterialCost>&Selectable<MaterialCost>
+		 */
 		public function getMaterials(): Selectable&Collection {
 			return $this->materials;
+		}
+
+		public function getMaterial(Item $item): ?MaterialCost {
+			/** @var MaterialCost $material */
+			foreach ($this->getMaterials() as $material) {
+				if ($material->getItem() === $item)
+					return $material;
+			}
+
+			return null;
+		}
+
+		public function getOrAddMaterial(Item $item, int $amount): MaterialCost {
+			$material = $this->getMaterial($item);
+
+			if (!$material)
+				$this->getMaterials()->add($material = new MaterialCost($item, $amount));
+			else
+				$material->setQuantity($amount);
+
+			return $material;
 		}
 
 		public function getZennyCost(): int {

@@ -5,6 +5,7 @@
 
 	class BatchManager {
 		protected int $counter = 0;
+		protected ?BatchDispatchHook $hook = null;
 
 		public function __construct(
 			protected EntityManagerInterface $entityManager,
@@ -27,5 +28,16 @@
 			$this->entityManager->clear();
 
 			$this->counter = 0;
+
+			$this->hook?->call();
+		}
+
+		public function hook(\Closure $callback): BatchDispatchHook {
+			$this->hook?->disconnect();
+			return $this->hook = new BatchDispatchHook($callback, $this->unhook(...));
+		}
+
+		protected function unhook(): void {
+			$this->hook = null;
 		}
 	}
