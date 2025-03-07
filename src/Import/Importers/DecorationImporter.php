@@ -38,12 +38,20 @@
 				);
 
 				if (!$deco) {
-					$deco = new Decoration($data->id, $data->names[Locale::English], $data->level, $data->rarity);
+					$deco = new Decoration(
+						$data->id,
+						$data->names[Locale::English],
+						$data->level,
+						$data->rarity,
+						$data->kind,
+					);
+
 					$this->entityManager->persist($deco);
 				} else {
 					$deco
 						->setSlot($data->level)
-						->setRarity($data->rarity);
+						->setRarity($data->rarity)
+						->setKind($data->kind);
 				}
 
 				$deco->setValue($data->price);

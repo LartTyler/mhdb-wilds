@@ -3,6 +3,7 @@
 
 	use App\Api\Models\DecorationModel;
 	use App\Api\Transformers\DecorationTransformer;
+	use App\Game\DecorationKind;
 	use DaybreakStudios\RestBundle\Entity\AsCrudEntity;
 	use DaybreakStudios\Utility\DoctrineEntities\EntityInterface;
 	use Doctrine\Common\Collections\ArrayCollection;
@@ -45,6 +46,9 @@
 		#[ORM\Column(options: ['unsigned' => true])]
 		private int $rarity;
 
+		#[ORM\Column(enumType: DecorationKind::class)]
+		private DecorationKind $kind;
+
 		#[ORM\Column(options: ['unsigned' => true])]
 		private int $value = 0;
 
@@ -55,11 +59,12 @@
 		#[ORM\JoinTable(name: 'decoration_skills')]
 		private Collection&Selectable $skills;
 
-		public function __construct(int $gameId, string $name, int $slot, int $rarity) {
+		public function __construct(int $gameId, string $name, int $slot, int $rarity, DecorationKind $kind) {
 			$this->gameId = $gameId;
 			$this->name = $name;
 			$this->slot = $slot;
 			$this->rarity = $rarity;
+			$this->kind = $kind;
 
 			$this->skills = new ArrayCollection();
 		}
@@ -106,6 +111,15 @@
 
 		public function setRarity(int $rarity): static {
 			$this->rarity = $rarity;
+			return $this;
+		}
+
+		public function getKind(): DecorationKind {
+			return $this->kind;
+		}
+
+		public function setKind(DecorationKind $kind): static {
+			$this->kind = $kind;
 			return $this;
 		}
 
