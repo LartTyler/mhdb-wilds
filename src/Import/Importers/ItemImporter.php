@@ -5,22 +5,14 @@
 	use App\I18n\Locale;
 	use App\Import\AsImporter;
 	use App\Import\ImportContext;
-	use App\Import\ImporterInterface;
 	use App\Import\Models\ItemModel;
 	use App\Import\Models\ItemRecipeModel;
-	use Doctrine\ORM\EntityManagerInterface;
+	use App\Import\Strings;
 	use Gedmo\Translatable\Entity\Translation;
-	use Symfony\Component\Console\Helper\ProgressBar;
-	use Symfony\Component\Serializer\SerializerInterface;
 
 	#[AsImporter(priority: 100)]
-	class ItemImporter implements ImporterInterface {
-		public function __construct(
-			protected SerializerInterface $serializer,
-			protected EntityManagerInterface $entityManager,
-		) {}
-
-		public function import(ImportContext $context): void {
+	class ItemImporter extends AbstractImporter {
+		public function __invoke(ImportContext $context): void {
 			$path = $context->basePath . DIRECTORY_SEPARATOR . 'Item.json';
 
 			/** @var ItemModel[] $importData */
@@ -32,8 +24,13 @@
 
 			$context->progressStart(count($importData));
 
+			/** @var int[] $visitedIds */
+			$visitedIds = [];
+
 			foreach ($importData as $data) {
 				$context->progressAdvance();
+
+				$visitedIds[] = $data->id;
 
 				$item = $this->entityManager->getRepository(Item::class)->findOneBy(
 					[
@@ -58,10 +55,10 @@
 
 				foreach (array_keys($data->names) as $locale) {
 					if ($name = $data->names[$locale] ?? null)
-						$translations->translate($item, 'name', $locale, str_replace("\r\n", ' ', $name));
+						$translations->translate($item, 'name', $locale, Strings::clean($name));
 
 					if ($desc = $data->descriptions[$locale] ?? null)
-						$translations->translate($item, 'description', $locale, str_replace("\r\n", ' ', $desc));
+						$translations->translate($item, 'description', $locale, Strings::clean($desc));
 				}
 
 				$context->batch->increment(count($data->names) + count($data->descriptions) + 1);
@@ -110,5 +107,13 @@
 			}
 
 			$context->batch->dispatch();
+
+			// Purge any items that were not in the import.
+			$this->entityManager->createQueryBuilder()
+				->delete(Item::class, 'item')
+				->where('item.gameId NOT IN (:visited)')
+				->setParameter('visited', $visitedIds)
+				->getQuery()
+				->execute();
 		}
 	}

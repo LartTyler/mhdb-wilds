@@ -1,12 +1,13 @@
 <?php
 	namespace App\Entity;
 
-	use DaybreakStudios\RestBundle\Entity\AsCrudEntity;
 	use App\Api\Models\SkillModel;
 	use App\Api\Transformers\SkillTransformer;
+	use DaybreakStudios\RestBundle\Entity\AsCrudEntity;
 	use DaybreakStudios\Utility\DoctrineEntities\EntityInterface;
 	use Doctrine\Common\Collections\ArrayCollection;
 	use Doctrine\Common\Collections\Collection;
+	use Doctrine\Common\Collections\Criteria;
 	use Doctrine\Common\Collections\Selectable;
 	use Doctrine\DBAL\Types\Types;
 	use Doctrine\ORM\Mapping as ORM;
@@ -21,6 +22,7 @@
 	)]
 	class Skill implements EntityInterface {
 		use EntityTrait;
+		use GameIdTrait;
 
 		#[Translatable]
 		#[ORM\Column(nullable: true)]
@@ -36,7 +38,8 @@
 		#[ORM\Column(type: Types::TEXT, nullable: true)]
 		private ?string $description = null;
 
-		public function __construct(string $name) {
+		public function __construct(int $gameId, string $name) {
+			$this->gameId = $gameId;
 			$this->name = $name;
 			$this->ranks = new ArrayCollection();
 		}
@@ -64,5 +67,22 @@
 		 */
 		public function getRanks(): Selectable&Collection {
 			return $this->ranks;
+		}
+
+		public function getRank(int $level): ?SkillRank {
+			$criteria = Criteria::create()
+				->where(Criteria::expr()->eq('level', $level))
+				->setMaxResults(1);
+
+			return $this->getRanks()->matching($criteria)->first() ?: null;
+		}
+
+		public function getOrCreateRank(int $level): SkillRank {
+			$rank = $this->getRank($level);
+
+			if (!$rank)
+				$this->getRanks()->add($rank = new SkillRank($this, $level));
+
+			return $rank;
 		}
 	}

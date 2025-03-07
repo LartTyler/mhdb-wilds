@@ -1,9 +1,9 @@
 <?php
 	namespace App\Entity;
 
-	use DaybreakStudios\RestBundle\Entity\AsCrudEntity;
 	use App\Api\Models\DecorationModel;
 	use App\Api\Transformers\DecorationTransformer;
+	use DaybreakStudios\RestBundle\Entity\AsCrudEntity;
 	use DaybreakStudios\Utility\DoctrineEntities\EntityInterface;
 	use Doctrine\Common\Collections\ArrayCollection;
 	use Doctrine\Common\Collections\Collection;
@@ -29,16 +29,24 @@
 	)]
 	class Decoration implements EntityInterface {
 		use EntityTrait;
+		use GameIdTrait;
 
 		#[Translatable]
 		#[ORM\Column(nullable: true)]
 		private ?string $name;
+
+		#[Translatable]
+		#[ORM\Column(nullable: true)]
+		private ?string $description = null;
 
 		#[ORM\Column(options: ['unsigned' => true])]
 		private int $slot;
 
 		#[ORM\Column(options: ['unsigned' => true])]
 		private int $rarity;
+
+		#[ORM\Column(options: ['unsigned' => true])]
+		private int $value = 0;
 
 		/**
 		 * @var Selectable<SkillRank>&Collection<SkillRank>
@@ -47,7 +55,8 @@
 		#[ORM\JoinTable(name: 'decoration_skills')]
 		private Collection&Selectable $skills;
 
-		public function __construct(string $name, int $slot, int $rarity) {
+		public function __construct(int $gameId, string $name, int $slot, int $rarity) {
+			$this->gameId = $gameId;
 			$this->name = $name;
 			$this->slot = $slot;
 			$this->rarity = $rarity;
@@ -61,6 +70,24 @@
 
 		public function setName(?string $name): static {
 			$this->name = $name;
+			return $this;
+		}
+
+		public function getDescription(): ?string {
+			return $this->description;
+		}
+
+		public function setDescription(?string $description): static {
+			$this->description = $description;
+			return $this;
+		}
+
+		public function getValue(): int {
+			return $this->value;
+		}
+
+		public function setValue(int $value): static {
+			$this->value = $value;
 			return $this;
 		}
 
