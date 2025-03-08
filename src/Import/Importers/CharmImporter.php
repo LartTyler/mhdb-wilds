@@ -4,6 +4,8 @@
 	use App\Entity\Charm;
 	use App\Entity\CharmRank;
 	use App\Entity\Item;
+	use App\Entity\Skill;
+	use App\Entity\SkillRank;
 	use App\I18n\Locale;
 	use App\Import\AsImporter;
 	use App\Import\ImportContext;
@@ -90,6 +92,43 @@
 				if ($desc = $data->descriptions[$locale])
 					$strings->translate($rank, 'description', $locale, Strings::clean($desc));
 			}
+
+			// An array of skills seen while importing charm skills.
+			/** @var SkillRank[] $visited */
+			$visited = [];
+
+			foreach ($data->skills as $skillId => $level) {
+				$skill = $this->entityManager->getRepository(Skill::class)->findOneBy(
+					[
+						'gameId' => $skillId,
+					],
+				);
+
+				if (!$skill)
+					throw ImportException::notFound('skill', 'gameId', $skillId, 'charm rank skills');
+
+				$skillRank = $skill->getRank($level);
+
+				if (!$skillRank) {
+					throw ImportException::notFound(
+						'skill rank',
+						'(gameId, level)',
+						sprintf(
+							'(%d, %d)',
+							$skillId,
+							$level,
+						),
+						'charm rank skills',
+					);
+				}
+
+				if (!$rank->getSkills()->contains($skillRank))
+					$rank->getSkills()->add($skillRank);
+
+				$visited[] = $skillRank;
+			}
+
+			$rank->removeOrphanedSkills($visited);
 
 			$crafting = $rank->getOrCreateCrafting()
 				->setZennyCost($data->price);

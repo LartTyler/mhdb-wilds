@@ -118,6 +118,22 @@
 			return $this->skills;
 		}
 
+		/**
+		 * @param SkillRank[] $visited
+		 *
+		 * @return $this
+		 */
+		public function removeOrphanedSkills(array $visited): static {
+			foreach ($this->getSkills()->getKeys() as $key) {
+				$skillRank = $this->skills->get($key);
+
+				if (!in_array($skillRank, $visited))
+					$this->skills->remove($key);
+			}
+
+			return $this;
+		}
+
 		public function getCrafting(): ?CharmRankCrafting {
 			return $this->crafting;
 		}
