@@ -3,6 +3,7 @@
 
 	use App\Api\Models\SkillModel;
 	use App\Api\Transformers\SkillTransformer;
+	use App\Game\SkillKind;
 	use DaybreakStudios\RestBundle\Entity\AsCrudEntity;
 	use DaybreakStudios\Utility\DoctrineEntities\EntityInterface;
 	use Doctrine\Common\Collections\ArrayCollection;
@@ -38,9 +39,13 @@
 		#[ORM\Column(type: Types::TEXT, nullable: true)]
 		private ?string $description = null;
 
-		public function __construct(int $gameId, string $name) {
+		#[ORM\Column(nullable: true, enumType: SkillKind::class)]
+		private ?SkillKind $kind = null;
+
+		public function __construct(int $gameId, string $name, SkillKind $kind) {
 			$this->gameId = $gameId;
 			$this->name = $name;
+			$this->kind = $kind;
 			$this->ranks = new ArrayCollection();
 		}
 
@@ -50,6 +55,15 @@
 
 		public function setName(?string $name): static {
 			$this->name = $name;
+			return $this;
+		}
+
+		public function getKind(): ?SkillKind {
+			return $this->kind;
+		}
+
+		public function setKind(?SkillKind $kind): static {
+			$this->kind = $kind;
 			return $this;
 		}
 

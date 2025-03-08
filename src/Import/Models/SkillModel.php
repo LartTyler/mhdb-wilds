@@ -1,6 +1,8 @@
 <?php
 	namespace App\Import\Models;
 
+	use App\Game\SkillKind;
+
 	class SkillModel {
 		use IdentifiedTrait;
 		use NameTranslationsTrait;
@@ -10,4 +12,6 @@
 		 * @var SkillRankModel[]
 		 */
 		public array $ranks;
+
+		public SkillKind $kind;
 	}

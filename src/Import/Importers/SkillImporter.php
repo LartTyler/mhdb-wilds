@@ -35,9 +35,10 @@
 				);
 
 				if (!$skill) {
-					$skill = new Skill($data->id, $data->names[Locale::English]);
+					$skill = new Skill($data->id, $data->names[Locale::English], $data->kind);
 					$this->entityManager->persist($skill);
-				}
+				} else
+					$skill->setKind($data->kind);
 
 				$strings = $this->entityManager->getRepository(Translation::class);
 
