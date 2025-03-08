@@ -1,9 +1,9 @@
 <?php
 	namespace App\Entity;
 
-	use DaybreakStudios\RestBundle\Entity\AsCrudEntity;
 	use App\Api\Models\CharmRankCraftingModel;
 	use App\Api\Transformers\CharmRankCraftingTransformer;
+	use DaybreakStudios\RestBundle\Entity\AsCrudEntity;
 	use DaybreakStudios\Utility\DoctrineEntities\EntityInterface;
 	use Doctrine\Common\Collections\ArrayCollection;
 	use Doctrine\Common\Collections\Collection;
@@ -64,8 +64,39 @@
 			return $this;
 		}
 
+		/**
+		 * @return Collection<MaterialCost>&Selectable<MaterialCost>
+		 */
 		public function getMaterials(): Selectable&Collection {
 			return $this->materials;
+		}
+
+		public function getOrAddItem(Item $item, int $amount): ?MaterialCost {
+			/** @var MaterialCost $material */
+			foreach ($this->materials as $material) {
+				if ($material->getItem() === $item)
+					return $material->setQuantity($amount);
+			}
+
+			$this->materials->add($material = new MaterialCost($item, $amount));
+			return $material;
+		}
+
+		/**
+		 * @param Item[] $items
+		 *
+		 * @return $this
+		 */
+		public function removeOrphanedMaterialsByItem(array $items): static {
+			foreach ($this->materials->getKeys() as $key) {
+				/** @var MaterialCost $material */
+				$material = $this->materials->get($key);
+
+				if (!in_array($material->getItem(), $items))
+					$this->materials->remove($key);
+			}
+
+			return $this;
 		}
 
 		public function getZennyCost(): int {

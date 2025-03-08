@@ -1,15 +1,17 @@
 <?php
 	namespace App\Entity;
 
-	use DaybreakStudios\RestBundle\Entity\AsCrudEntity;
 	use App\Api\Models\CharmRankModel;
 	use App\Api\Transformers\CharmRankTransformer;
+	use DaybreakStudios\RestBundle\Entity\AsCrudEntity;
 	use DaybreakStudios\Utility\DoctrineEntities\EntityInterface;
 	use Doctrine\Common\Collections\ArrayCollection;
 	use Doctrine\Common\Collections\Collection;
 	use Doctrine\Common\Collections\Selectable;
+	use Doctrine\DBAL\Types\Types;
 	use Doctrine\ORM\Mapping as ORM;
 	use Gedmo\Mapping\Annotation\Translatable;
+	use Symfony\Component\Serializer\Attribute\Ignore;
 
 	#[ORM\Entity]
 	#[ORM\Table(name: 'charm_ranks')]
@@ -42,6 +44,10 @@
 		#[Translatable]
 		#[ORM\Column(nullable: true)]
 		private ?string $name;
+
+		#[Translatable]
+		#[ORM\Column(type: Types::TEXT, nullable: true)]
+		private ?string $description;
 
 		#[ORM\Column(options: ['unsigned' => true])]
 		private int $level;
@@ -81,6 +87,15 @@
 			return $this;
 		}
 
+		public function getDescription(): ?string {
+			return $this->description;
+		}
+
+		public function setDescription(?string $description): static {
+			$this->description = $description;
+			return $this;
+		}
+
 		public function getLevel(): int {
 			return $this->level;
 		}
@@ -110,5 +125,16 @@
 		public function setCrafting(?CharmRankCrafting $crafting): static {
 			$this->crafting = $crafting;
 			return $this;
+		}
+
+		/**
+		 * @param bool|null $craftable Indicates that the charm is directly craftable; if `null`, will be inferred from
+		 *                             the {@see static::$level} property.
+		 *
+		 * @return CharmRankCrafting
+		 */
+		#[Ignore]
+		public function getOrCreateCrafting(?bool $craftable = null): CharmRankCrafting {
+			return $this->crafting ??= new CharmRankCrafting($this, $craftable ?? $this->getLevel() === 1);
 		}
 	}
