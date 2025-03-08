@@ -1,100 +1,14 @@
-A complete rewrite of [MHWDB-API](https://github.com/LartTyler/MHWDB-API), with the primary goal of being extendable to
-support any Monster Hunter game.
+# About
+This is the source code for the Monster Hunter Wilds database project, forked from
+[mhdb-core](https://github.com/LartTyler/mhdb-core). This repository does not contain any actual data; if you're looking
+for the sources used to populate the API, they can be [here](https://github.com/LartTyler/mhdb-wilds-data/output/merged)
+project.
 
-More information to come soon.
+API usage documentation can be found at [https://docs.wilds.mhdb.io](https://docs.wilds.mhdb.io).
 
-- [Installation](#installation)
-- [Data Sources (Imports)](#data-sources-imports)
-- [Supporting a New Game (Forking)](#supporting-a-new-game-forking)
-
-## Installation
-This project ships with a `docker-compose.yaml` configuration that should be suitable for production environments. The
-database password can be set by placing a text file containing the desired password at
-`/docker/secrets/db_password.txt`.
-
-The database can be initialized by running the composer script `db:migrate`, and the `deploy` script can be used to
-update the repository from remote, install or update any necessary dependencies, and synchronize the database state with
-any new migrations in a single command.
-
-```shell
-$ docker compose exec php composer db:migrate
-$ docker compose exec php composer deploy
-```
-
-## Data Sources (Imports)
-Data can be imported from a static source using the CLI command `app:import`.
-
-```shell
-$ docker compose exec php bin/console app:import --help
-```
-
-Because data sources can vary wildly from game to game, no importers are provided as part of this project. Instead, a
-general framework is provided to streamline building per-game importers.
-
-Each importer should be a Symfony service that either:
-- Implements `App\Import\ImporterInterface`, or
-- Is tagged with the `AsImporter` attribute.
-
-Classes placed in `/src/Import/Importers` are configured to be registered as services automatically. Importers support
-a `priority` tag argument, allowing you to control the order they run in; importers with a higher priority will be run
-first. This can be useful if you have an importer that defines data that other importers rely on.
-
-In order to manage PHP's memory limits, you should use the `BatchManager` instance provided in the `ImportContext`
-object passed to each importer. Calling `BatchManager::increment()` will increase the internal object counter, and once
-that counter passes the configured limit any pending database changes will be flushed and all entities detached from
-Doctrine's object manager. Note that you may need to manually call `BatchManager::dispatch()` after loops and the like
-to ensure that any changes that didn't quite pass the batch threshold are saved.
-
-```php
-<?php
-    #[\App\Import\AsImporter(priority: 10)]
-    class MyImporter {
-        public function __construct(
-            protected \Doctrine\ORM\EntityManagerInterface $entityManager
-        ) {}
-    
-        public function __invoke(\App\Import\ImportContext $context) {
-            $sourceData = loadDataFromSomeSource();
-            
-            foreach ($sourceData as $data) {
-                // Initialize the new entity...
-                $entity = new Entity();
-                $this->entityManager->persist($entity);
-                
-                // Increment the batch counter so the manager knows we've added a new tracked object.
-                // An argument can be passed to `increment()` to change how much the counter is increased by.
-                $context->batch->increment();
-            }
-            
-            // Manually trigger a dispatch to ensure that all our changes are saved. Without this, any changes made at
-            // the end of the previous loop may not be saved.
-            //
-            // This is not necessary at the end of your importer, as `BatchManager::dispatch()` is automatically called
-            // after each importer finishes running, but is included here as an example.
-            $context->batch->dispatch();
-        }
-    }
-```
-
-If you're working with a CSV data source, you can use the `CsvReader` class to simplify loading the CSV and parsing
-each row into an object.
-
-## Supporting a New Game (Forking)
-This project intentionally limits supported game features to those common across most Monster Hunter titles. In order
-to support a specific game, a new repository needs to be created. This should be done by cloning or forking this
-repository, then making changes in the new repository to fully support the target game.
-
-It is recommended to add this repository as a remote in the new repository, in order to periodically receive changes or
-improvements added here.
-
-```shell
-$ git remote add upstream https://github.com/LartTyler/mhdb-core
-$ git fetch upstream
-```
-
-You can then merge any changes in this repository with the new repository.
-
-```shell
-$ git fetch upstream
-$ git merge upstream/main
-```
+**Please note** that this API is a work in progress. Data is sourced from the game's files, and it takes time to
+build the systems required to import that information into the API. The
+[mhdb-wilds-data](https://github.com/LartTyler/mhdb-wilds-data) contains the toolset used to extract and merge the raw
+data into "friendly" files, which are then imported by the
+[importer suite](https://github.com/LartTyler/mhdb-wilds/tree/main/src/Import) in this project. If you'd like to
+contribute, feel free to open a pull request here, or reach out in our [Discord server](https://discord.gg/6GEHHQh).
