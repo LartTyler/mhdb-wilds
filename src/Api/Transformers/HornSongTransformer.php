@@ -27,7 +27,7 @@
 				$entity->setDuration($data->duration);
 
 			if (isset($data->effects))
-				$entity->setEffects($data->effects);
+				$entity->setName($data->effects);
 
 			if (isset($data->personal))
 				$entity->setPersonal($data->personal);

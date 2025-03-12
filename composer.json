@@ -81,6 +81,10 @@
             "@php bin/console doctrine:database:drop --force",
             "@php bin/console doctrine:database:create"
         ],
+        "db:force-wipe-database": [
+            "@db:force-reset-database",
+            "@db:migrate -n"
+        ],
         "db:diff": "@php bin/console --ansi doctrine:migrations:diff",
         "db:migrate": "@php bin/console --ansi doctrine:migrations:migrate",
         "db:squash-migrations": [

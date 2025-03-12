@@ -16,18 +16,7 @@
 		 * @var BowCoating[]
 		 */
 		#[ORM\Column(type: Types::JSON, enumType: BowCoating::class)]
-		private array $coatings;
-
-		/**
-		 * @param string       $name
-		 * @param int          $rarity
-		 * @param DamageKind   $damageKind
-		 * @param BowCoating[] $coatings
-		 */
-		public function __construct(string $name, int $rarity, DamageKind $damageKind, array $coatings) {
-			parent::__construct($name, $rarity, $damageKind);
-			$this->coatings = $coatings;
-		}
+		private array $coatings = [];
 
 		/**
 		 * @return BowCoating[]

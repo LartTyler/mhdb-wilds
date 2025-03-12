@@ -2,20 +2,28 @@
 	namespace App\Entity\Weapons;
 
 	use App\Entity\HornMelody;
+	use App\Entity\SharpnessInterface;
+	use App\Entity\SharpnessTrait;
 	use App\Entity\Weapon;
-	use App\Game\DamageKind;
 	use App\Game\WeaponKind;
 	use Doctrine\ORM\Mapping as ORM;
 
 	#[ORM\Entity]
-	class HuntingHorn extends Weapon {
+	class HuntingHorn extends Weapon implements SharpnessInterface {
+		use SharpnessTrait;
+
 		protected WeaponKind $kind = WeaponKind::HuntingHorn;
 
 		#[ORM\ManyToOne(targetEntity: HornMelody::class)]
 		private HornMelody $melody;
 
-		public function __construct(string $name, int $rarity, DamageKind $damageKind, HornMelody $melody) {
-			parent::__construct($name, $rarity, $damageKind);
+		public function __construct(
+			int $gameId,
+			string $name,
+			int $rarity,
+			HornMelody $melody,
+		) {
+			parent::__construct($gameId, $name, $rarity);
 			$this->melody = $melody;
 		}
 

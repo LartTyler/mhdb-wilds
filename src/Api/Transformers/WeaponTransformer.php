@@ -13,7 +13,7 @@
 	use App\Api\Models\Weapons\LightBowgunModel;
 	use App\Api\Models\Weapons\StubWeaponModel;
 	use App\Api\Models\WeaponStatusModel;
-	use App\Entity\Ammo;
+	use App\Entity\HeavyBowgunAmmo;
 	use App\Entity\AutoReload;
 	use App\Entity\RapidFire;
 	use App\Entity\Sharpness;
@@ -264,8 +264,8 @@
 		}
 
 		/**
-		 * @param AmmoModel[]      $data
-		 * @param Collection<Ammo> $collection
+		 * @param AmmoModel[]                 $data
+		 * @param Collection<HeavyBowgunAmmo> $collection
 		 *
 		 * @return void
 		 */
@@ -273,7 +273,7 @@
 			$collection->clear();
 
 			foreach ($data as $item) {
-				$ammo = new Ammo($item->kind);
+				$ammo = new HeavyBowgunAmmo($item->kind);
 				$ammo->setCapacities($item->capacities);
 
 				$collection->add($ammo);

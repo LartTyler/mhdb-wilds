@@ -3,7 +3,7 @@
 
 	enum AmmoKind: string {
 		case Normal = 'normal';
-		case Piercing = 'piercing';
+		case Pierce = 'pierce';
 		case Spread = 'spread';
 		case Sticky = 'sticky';
 		case Cluster = 'cluster';
@@ -25,7 +25,7 @@
 
 		public function getLevels(): int {
 			return match ($this) {
-				self::Normal, self::Cluster, self::Sticky, self::Spread, self::Piercing => 3,
+				self::Normal, self::Cluster, self::Sticky, self::Spread, self::Pierce => 3,
 				self::Recover, self::Sleep, self::Paralysis, self::Poison, self::Exhaust => 2,
 				self::Flaming, self::Armor, self::Demon, self::Wyvern, self::Slicing, self::Dragon, self::Thunder, self::Freeze, self::Water, self::Tranq => 1,
 			};

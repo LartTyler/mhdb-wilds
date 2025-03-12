@@ -1,10 +1,10 @@
 <?php
 	namespace App\Entity;
 
-	use DaybreakStudios\RestBundle\Entity\AsCrudEntity;
 	use App\Api\Models\HornMelodyModel;
 	use App\Api\Transformers\HornMelodyTransformer;
 	use App\Game\Note;
+	use DaybreakStudios\RestBundle\Entity\AsCrudEntity;
 	use DaybreakStudios\Utility\DoctrineEntities\EntityInterface;
 	use Doctrine\Common\Collections\ArrayCollection;
 	use Doctrine\Common\Collections\Collection;
@@ -17,9 +17,15 @@
 		basePath: '/weapons/hunting-horn/melodies',
 		transformer: HornMelodyTransformer::class,
 		dtoClass: HornMelodyModel::class,
+		strict: [
+			'songs' => [
+				'melodies',
+			],
+		]
 	)]
 	class HornMelody implements EntityInterface {
 		use EntityTrait;
+		use GameIdTrait;
 
 		/**
 		 * @type Note[]
@@ -31,15 +37,19 @@
 		/**
 		 * @var Selectable<HornSong>&Collection<HornSong>
 		 */
-		#[ORM\OneToMany(mappedBy: 'melody', targetEntity: HornSong::class, cascade: ['all'], orphanRemoval: true)]
+		#[ORM\ManyToMany(targetEntity: HornSong::class, inversedBy: 'melodies')]
+		#[ORM\JoinTable(name: 'horn_melody_songs')]
 		private Collection&Selectable $songs;
 
 		/**
-		 * @param Note[] $notes
+		 * @param Note[]                       $notes
+		 *
 		 * @psalm-param list{Note, Note, Note} $notes
 		 */
-		public function __construct(array $notes) {
+		public function __construct(int $gameId, array $notes) {
+			$this->gameId = $gameId;
 			$this->notes = $notes;
+
 			$this->songs = new ArrayCollection();
 		}
 
@@ -52,9 +62,9 @@
 		}
 
 		/**
-		 * @param Note[] $notes
-		 * @psalm-param list{Note, Note, Note} $notes
+		 * @param Note[]                       $notes
 		 *
+		 * @psalm-param list{Note, Note, Note} $notes
 		 * @return $this
 		 */
 		public function setNotes(array $notes): static {
@@ -67,5 +77,24 @@
 		 */
 		public function getSongs(): Selectable&Collection {
 			return $this->songs;
+		}
+
+		public function addSong(HornSong $song): static {
+			if (!$this->getSongs()->contains($song))
+				$this->getSongs()->add($song);
+
+			return $this;
+		}
+
+		public function removeOrphanedSongsByEffectId(array $effectIds): static {
+			foreach ($this->getSongs()->getKeys() as $key) {
+				/** @var HornSong $song */
+				$song = $this->getSongs()->get($key);
+
+				if (!in_array($song->getEffectId(), $effectIds))
+					$this->getSongs()->remove($key);
+			}
+
+			return $this;
 		}
 	}

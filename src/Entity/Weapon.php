@@ -1,7 +1,6 @@
 <?php
 	namespace App\Entity;
 
-	use DaybreakStudios\RestBundle\Entity\AsCrudEntity;
 	use App\Api\Models\WeaponModel;
 	use App\Api\Transformers\WeaponTransformer;
 	use App\Entity\Weapons\Bow;
@@ -18,9 +17,9 @@
 	use App\Entity\Weapons\LongSword;
 	use App\Entity\Weapons\SwitchAxe;
 	use App\Entity\Weapons\SwordShield;
-	use App\Game\DamageKind;
 	use App\Game\Elderseal;
 	use App\Game\WeaponKind;
+	use DaybreakStudios\RestBundle\Entity\AsCrudEntity;
 	use DaybreakStudios\Utility\DoctrineEntities\EntityInterface;
 	use Doctrine\Common\Collections\ArrayCollection;
 	use Doctrine\Common\Collections\Collection;
@@ -31,6 +30,7 @@
 
 	#[ORM\Entity]
 	#[ORM\Table(name: 'weapons')]
+	#[ORM\UniqueConstraint(fields: ['kind', 'gameId'])]
 	#[ORM\InheritanceType('SINGLE_TABLE')]
 	#[ORM\DiscriminatorColumn(name: 'kind', enumType: WeaponKind::class)]
 	#[ORM\DiscriminatorMap([
@@ -66,6 +66,9 @@
 	abstract class Weapon implements EntityInterface {
 		use EntityTrait;
 
+		#[ORM\Column]
+		private int $gameId;
+
 		private WeaponKind $kind;
 
 		#[ORM\Embedded(class: DamageValues::class, columnPrefix: 'attack_')]
@@ -83,12 +86,6 @@
 
 		#[ORM\Column]
 		private int $rarity;
-
-		#[ORM\Column(enumType: DamageKind::class)]
-		private DamageKind $damageKind;
-
-		#[ORM\OneToMany(mappedBy: 'weapon', targetEntity: Sharpness::class, cascade: ['all'], orphanRemoval: true)]
-		private Collection&Selectable $sharpness;
 
 		/**
 		 * @var Selectable<Skill>&Collection<Skill>
@@ -115,14 +112,26 @@
 		#[ORM\OneToOne(mappedBy: 'weapon', targetEntity: WeaponCrafting::class, cascade: ['all'], orphanRemoval: true)]
 		private ?WeaponCrafting $crafting = null;
 
-		public function __construct(string $name, int $rarity, DamageKind $damageKind) {
+		public function __construct(int $gameId, string $name, int $rarity) {
+			$this->gameId = $gameId;
 			$this->name = $name;
 			$this->rarity = $rarity;
-			$this->damageKind = $damageKind;
 
 			$this->damage = new DamageValues();
 			$this->specials = new ArrayCollection();
 			$this->skills = new ArrayCollection();
+
+			if ($this instanceof SharpnessInterface)
+				$this->setSharpness(new Sharpness());
+		}
+
+		public function getGameId(): int {
+			return $this->gameId;
+		}
+
+		public function setGameId(int $gameId): static {
+			$this->gameId = $gameId;
+			return $this;
 		}
 
 		public function getCrafting(): ?WeaponCrafting {
@@ -185,15 +194,6 @@
 			return $this;
 		}
 
-		public function getDamageKind(): DamageKind {
-			return $this->damageKind;
-		}
-
-		public function setDamageKind(DamageKind $damageKind): static {
-			$this->damageKind = $damageKind;
-			return $this;
-		}
-
 		/**
 		 * @return int[]
 		 */
@@ -218,10 +218,6 @@
 		public function setAffinity(int $affinity): static {
 			$this->affinity = $affinity;
 			return $this;
-		}
-
-		public function getSharpness(): Selectable&Collection {
-			return $this->sharpness;
 		}
 
 		/**

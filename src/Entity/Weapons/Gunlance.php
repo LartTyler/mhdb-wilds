@@ -1,14 +1,17 @@
 <?php
 	namespace App\Entity\Weapons;
 
+	use App\Entity\SharpnessInterface;
+	use App\Entity\SharpnessTrait;
 	use App\Entity\Weapon;
-	use App\Game\DamageKind;
 	use App\Game\GunlanceShell;
 	use App\Game\WeaponKind;
 	use Doctrine\ORM\Mapping as ORM;
 
 	#[ORM\Entity]
-	class Gunlance extends Weapon {
+	class Gunlance extends Weapon implements SharpnessInterface {
+		use SharpnessTrait;
+
 		protected WeaponKind $kind = WeaponKind::Gunlance;
 
 		#[ORM\Column(enumType: GunlanceShell::class)]
@@ -16,18 +19,6 @@
 
 		#[ORM\Column(options: ['unsigned' => true])]
 		private int $shellLevel;
-
-		public function __construct(
-			string $name,
-			int $rarity,
-			DamageKind $damageKind,
-			GunlanceShell $shell,
-			int $shellLevel,
-		) {
-			parent::__construct($name, $rarity, $damageKind);
-			$this->shell = $shell;
-			$this->shellLevel = $shellLevel;
-		}
 
 		public function getShell(): GunlanceShell {
 			return $this->shell;

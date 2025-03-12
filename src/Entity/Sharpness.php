@@ -1,17 +1,10 @@
 <?php
 	namespace App\Entity;
 
-	use DaybreakStudios\Utility\DoctrineEntities\EntityInterface;
 	use Doctrine\ORM\Mapping as ORM;
 
-	#[ORM\Entity(readOnly: true)]
-	class Sharpness implements EntityInterface {
-		use EntityTrait;
-
-		#[ORM\ManyToOne(targetEntity: Weapon::class, inversedBy: 'sharpness')]
-		#[ORM\JoinColumn(nullable: false)]
-		private Weapon $weapon;
-
+	#[ORM\Embeddable]
+	class Sharpness {
 		#[ORM\Column(options: ['unsigned' => true])]
 		private int $red = 0;
 
@@ -32,10 +25,6 @@
 
 		#[ORM\Column(options: ['unsigned' => true])]
 		private int $purple = 0;
-
-		public function __construct(Weapon $weapon) {
-			$this->weapon = $weapon;
-		}
 
 		public function getRed(): int {
 			return $this->red;

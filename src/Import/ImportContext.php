@@ -17,6 +17,10 @@
 			protected readonly ConsoleOutputInterface $output,
 		) {}
 
+		public function path(string ...$components): string {
+			return array_reduce($components, fn($path, $part) => $path . DIRECTORY_SEPARATOR . $part, $this->basePath);
+		}
+
 		public function progressStart(int $max): void {
 			$this->progressFinish();
 

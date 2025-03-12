@@ -2,11 +2,12 @@
 	namespace App\Game;
 
 	enum Note: string {
-		case Red = 'red';
 		case Purple = 'purple';
-		case Blue = 'blue';
-		case White = 'white';
+		case Red = 'red';
+		case Orange = 'orange';
 		case Yellow = 'yellow';
 		case Green = 'green';
+		case Blue = 'blue';
 		case Aqua = 'aqua';
+		case White = 'white';
 	}
