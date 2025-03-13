@@ -12,4 +12,16 @@
 		use SharpnessTrait;
 
 		protected WeaponKind $kind = WeaponKind::InsectGlaive;
+
+		#[ORM\Column(options: ['unsigned' => true])]
+		private int $kinsectLevel;
+
+		public function getKinsectLevel(): int {
+			return $this->kinsectLevel;
+		}
+
+		public function setKinsectLevel(int $kinsectLevel): static {
+			$this->kinsectLevel = $kinsectLevel;
+			return $this;
+		}
 	}
