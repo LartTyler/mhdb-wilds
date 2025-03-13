@@ -20,6 +20,7 @@
 		WeaponKind::InsectGlaive->value => InsectGlaiveModel::class,
 		WeaponKind::Lance->value => LanceModel::class,
 		WeaponKind::LightBowgun->value => LightBowgunModel::class,
+		WeaponKind::LongSword->value => LongSwordModel::class,
 	])]
 	class WeaponModel {
 		use IdentifiedTrait;
