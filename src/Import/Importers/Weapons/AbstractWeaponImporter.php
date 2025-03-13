@@ -4,6 +4,7 @@
 	use App\Entity\Item;
 	use App\Entity\MaterialCost;
 	use App\Entity\SharpnessInterface;
+	use App\Entity\Skill;
 	use App\Entity\Weapon;
 	use App\Import\ImportContext;
 	use App\Import\Importers\AbstractImporter;
@@ -64,7 +65,7 @@
 
 				$weapon->getDamage()
 					->setRaw($data->attackRaw)
-					->setDisplay($weapon->getKind()->coefficient() * $data->attackRaw);
+					->setDisplay(ceil($weapon->getKind()->coefficient() * $data->attackRaw));
 
 				$strings = $this->entityManager->getRepository(Translation::class);
 
@@ -103,6 +104,37 @@
 					);
 
 					$this->setSharpnessData($weapon, $data->getSharpness(), $data->getHandicraft());
+				}
+
+				$weapon->getSkills()->clear();
+
+				foreach ($data->skills as $skillId => $level) {
+					$skill = $this->entityManager->getRepository(Skill::class)->findOneBy(
+						[
+							'gameId' => $skillId,
+						],
+					);
+
+					if (!$skill)
+						throw ImportException::notFound('skill', 'gameId', $skillId, strtolower($entityName));
+
+					$rank = $skill->getRank($level);
+
+					if (!$rank) {
+						throw ImportException::notFound(
+							'skill rank',
+							'(gameId, level)',
+							sprintf(
+								'(%d, %d)',
+								$skillId,
+								$level,
+							),
+							strtolower($entityName),
+						);
+					}
+
+					$weapon->getSkills()->add($rank);
+					$objectCounter += 2;
 				}
 
 				$this->process($context, $weapon, $data);

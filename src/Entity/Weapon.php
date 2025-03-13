@@ -72,8 +72,8 @@
 			'melody' => [
 				'songs' => [
 					'melodies',
-				]
-			]
+				],
+			],
 		]
 	)]
 	abstract class Weapon implements EntityInterface {
@@ -105,9 +105,9 @@
 		protected int $rarity;
 
 		/**
-		 * @var Selectable<Skill>&Collection<Skill>
+		 * @var Selectable<SkillRank>&Collection<SkillRank>
 		 */
-		#[ORM\ManyToMany(targetEntity: Skill::class)]
+		#[ORM\ManyToMany(targetEntity: SkillRank::class)]
 		#[ORM\JoinTable(name: 'weapon_skills')]
 		protected Collection&Selectable $skills;
 
@@ -204,7 +204,7 @@
 				if ($special instanceof WeaponElement && $special->getElement() === $element) {
 					$special->getDamage()
 						->setRaw($raw)
-						->setDisplay($raw * DamageValues::ELEMENT_COEFFICIENT);
+						->setDisplay(ceil($raw * DamageValues::ELEMENT_COEFFICIENT));
 
 					return $special;
 				}
@@ -213,7 +213,7 @@
 			$this->getSpecials()->add($special = new WeaponElement($this, $element, $hidden));
 			$special->getDamage()
 				->setRaw($raw)
-				->setDisplay($raw * DamageValues::ELEMENT_COEFFICIENT);
+				->setDisplay(ceil($raw * DamageValues::ELEMENT_COEFFICIENT));
 
 			return $special;
 		}
@@ -281,7 +281,7 @@
 		}
 
 		/**
-		 * @return Collection<Skill>&Selectable<Skill>
+		 * @return Collection<SkillRank>&Selectable<SkillRank>
 		 */
 		public function getSkills(): Selectable&Collection {
 			return $this->skills;

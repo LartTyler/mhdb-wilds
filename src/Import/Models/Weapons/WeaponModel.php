@@ -17,6 +17,8 @@
 		WeaponKind::Hammer->value => HammerModel::class,
 		WeaponKind::HeavyBowgun->value => HeavyBowgunModel::class,
 		WeaponKind::HuntingHorn->value => HuntingHornModel::class,
+		WeaponKind::InsectGlaive->value => InsectGlaiveModel::class,
+		WeaponKind::Lance->value => LanceModel::class,
 	])]
 	class WeaponModel {
 		use IdentifiedTrait;
