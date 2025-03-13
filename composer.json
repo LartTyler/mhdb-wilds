@@ -8,7 +8,7 @@
         "ext-ctype": "*",
         "ext-iconv": "*",
         "dbstudios/doctrine-entities": "^1.0",
-        "dbstudios/doctrine-query-document": "^2.0",
+        "dbstudios/doctrine-query-document": "dev-main",
         "dbstudios/php-rest": "dev-feature/bundle-config",
         "doctrine/dbal": "^3",
         "doctrine/doctrine-bundle": "^2.12",

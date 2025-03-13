@@ -30,6 +30,9 @@ doctrine:
                 dir: "%kernel.project_dir%/vendor/gedmo/doctrine-extensions/src/Translatable/Entity"
         controller_resolver:
             auto_mapping: true
+        dql:
+            string_functions:
+                TYPE: DaybreakStudios\DoctrineQueryDocument\Doctrine\TypeFunction
 
 when@test:
     doctrine:

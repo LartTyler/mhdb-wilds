@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2bf0cb0a2bcd514044e825bd97e962c1",
+    "content-hash": "56224ff64b62ef28264d6007f54c556a",
     "packages": [
         {
             "name": "behat/transliterator",
@@ -96,16 +96,16 @@
         },
         {
             "name": "dbstudios/doctrine-query-document",
-            "version": "2.0.3",
+            "version": "dev-main",
             "source": {
                 "type": "git",
                 "url": "https://github.com/LartTyler/doctrine-query-document.git",
-                "reference": "506a8ee294374044d0624f2af0d8f36cd4b9b41f"
+                "reference": "c4c8fcb65adfe278c109995deef66346d45946a4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/LartTyler/doctrine-query-document/zipball/506a8ee294374044d0624f2af0d8f36cd4b9b41f",
-                "reference": "506a8ee294374044d0624f2af0d8f36cd4b9b41f",
+                "url": "https://api.github.com/repos/LartTyler/doctrine-query-document/zipball/c4c8fcb65adfe278c109995deef66346d45946a4",
+                "reference": "c4c8fcb65adfe278c109995deef66346d45946a4",
                 "shasum": ""
             },
             "require": {
@@ -118,6 +118,7 @@
             "suggest": {
                 "syslogic/doctrine-json-functions": "If you want to use the JSON type for fields"
             },
+            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -138,9 +139,9 @@
             "description": "Allows building Doctrine queries using MongoDB-style query documents",
             "support": {
                 "issues": "https://github.com/LartTyler/doctrine-query-document/issues",
-                "source": "https://github.com/LartTyler/doctrine-query-document/tree/2.0.3"
+                "source": "https://github.com/LartTyler/doctrine-query-document/tree/main"
             },
-            "time": "2024-04-26T16:23:24+00:00"
+            "time": "2025-03-13T00:00:37+00:00"
         },
         {
             "name": "dbstudios/php-rest",
@@ -6362,6 +6363,7 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
+        "dbstudios/doctrine-query-document": 20,
         "dbstudios/php-rest": 20
     },
     "prefer-stable": true,

@@ -25,3 +25,12 @@ services:
 
     App\Response\Listeners\:
         resource: '../src/Response/Listeners'
+
+    daybreak_studios_rest.query_manager:
+        class: DaybreakStudios\DoctrineQueryDocument\QueryManager
+        bind:
+            $objectManager: '@Doctrine\ORM\EntityManagerInterface'
+        calls:
+            - ['setDiscriminatorResolverFunctionName', ['TYPE']]
+
+    DaybreakStudios\DoctrineQueryDocument\QueryManagerInterface: '@daybreak_studios_rest.query_manager'
