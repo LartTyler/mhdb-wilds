@@ -52,6 +52,14 @@
 	#[AsCrudEntity(
 		basePath: '/weapons',
 		strict: [
+			'skills' => [
+				'skill' => [
+					'*',
+					'-id',
+					'-name',
+					'-description',
+				],
+			],
 			'crafting' => [
 				'previous' => [
 					'*',
