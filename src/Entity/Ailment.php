@@ -1,8 +1,6 @@
 <?php
 	namespace App\Entity;
 
-	use App\Api\Models\AilmentModel;
-	use App\Api\Transformers\AilmentTransformer;
 	use DaybreakStudios\RestBundle\Entity\AsCrudEntity;
 	use DaybreakStudios\Utility\DoctrineEntities\EntityInterface;
 	use Doctrine\DBAL\Types\Types;
@@ -13,8 +11,6 @@
 	#[ORM\Table(name: 'ailments')]
 	#[AsCrudEntity(
 		basePath: '/ailments',
-		transformer: AilmentTransformer::class,
-		dtoClass: AilmentModel::class,
 		strict: [
 			'protection' => [
 				'skills' => [

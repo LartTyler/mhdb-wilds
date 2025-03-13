@@ -1,8 +1,6 @@
 <?php
 	namespace App\Entity;
 
-	use App\Api\Models\ArmorCraftingModel;
-	use App\Api\Transformers\ArmorCraftingTransformer;
 	use DaybreakStudios\RestBundle\Entity\AsCrudEntity;
 	use DaybreakStudios\Utility\DoctrineEntities\EntityInterface;
 	use Doctrine\Common\Collections\ArrayCollection;
@@ -14,8 +12,6 @@
 	#[ORM\Table(name: 'armor_crafting')]
 	#[AsCrudEntity(
 		basePath: '/armor/crafting',
-		transformer: ArmorCraftingTransformer::class,
-		dtoClass: ArmorCraftingModel::class,
 		strict: [
 			'armor' => [
 				'*',

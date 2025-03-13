@@ -1,8 +1,6 @@
 <?php
 	namespace App\Entity;
 
-	use App\Api\Models\ArmorModel;
-	use App\Api\Transformers\ArmorTransformer;
 	use App\Game\ArmorKind;
 	use App\Game\Rank;
 	use DaybreakStudios\RestBundle\Entity\AsCrudEntity;
@@ -19,8 +17,6 @@
 	#[ORM\Table(name: 'armors')]
 	#[AsCrudEntity(
 		basePath: '/armor',
-		transformer: ArmorTransformer::class,
-		dtoClass: ArmorModel::class,
 		strict: [
 			'armorSet' => [
 				'*',

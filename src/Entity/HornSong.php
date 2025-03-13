@@ -1,8 +1,6 @@
 <?php
 	namespace App\Entity;
 
-	use App\Api\Models\HornSongModel;
-	use App\Api\Transformers\HornSongTransformer;
 	use App\Game\Note;
 	use App\Repository\HornSongRepository;
 	use DaybreakStudios\RestBundle\Entity\AsCrudEntity;
@@ -18,8 +16,6 @@
 	#[ORM\Table(name: 'horn_songs')]
 	#[AsCrudEntity(
 		basePath: '/weapons/hunting-horn/songs',
-		transformer: HornSongTransformer::class,
-		dtoClass: HornSongModel::class,
 		strict: [
 			'melodies' => [
 				'songs',

@@ -1,8 +1,6 @@
 <?php
 	namespace App\Entity;
 
-	use App\Api\Models\CharmRankCraftingModel;
-	use App\Api\Transformers\CharmRankCraftingTransformer;
 	use DaybreakStudios\RestBundle\Entity\AsCrudEntity;
 	use DaybreakStudios\Utility\DoctrineEntities\EntityInterface;
 	use Doctrine\Common\Collections\ArrayCollection;
@@ -14,8 +12,6 @@
 	#[ORM\Table(name: 'charm_rank_crafting')]
 	#[AsCrudEntity(
 		basePath: '/charms/ranks/crafting',
-		transformer: CharmRankCraftingTransformer::class,
-		dtoClass: CharmRankCraftingModel::class,
 		strict: [
 			'charmRank' => [
 				'*',

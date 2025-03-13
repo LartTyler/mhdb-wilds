@@ -2,8 +2,6 @@
 	namespace App\Entity;
 
 	use DaybreakStudios\RestBundle\Entity\AsCrudEntity;
-	use App\Api\Models\MonsterRewardConditionModel;
-	use App\Api\Transformers\MonsterRewardConditionTransformer;
 	use App\Game\MonsterRewardConditionKind;
 	use App\Game\Rank;
 	use DaybreakStudios\Utility\DoctrineEntities\EntityInterface;
@@ -14,8 +12,6 @@
 	#[ORM\Table(name: 'monster_reward_conditions')]
 	#[AsCrudEntity(
 		basePath: '/monsters/rewards/conditions',
-		transformer: MonsterRewardConditionTransformer::class,
-		dtoClass: MonsterRewardConditionModel::class,
 		strict: [
 			'reward' => [
 				'monster' => [

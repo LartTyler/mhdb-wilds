@@ -14,12 +14,6 @@ services:
     App\Command\:
         resource: '../src/Command'
 
-    App\Api\Transformers\:
-        resource: '../src/Api/Transformers'
-
-    App\DataFixtures\:
-        resource: '../src/DataFixtures'
-
     App\Import\Importers\:
         resource: '../src/Import/Importers'
 

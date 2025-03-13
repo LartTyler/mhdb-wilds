@@ -1,8 +1,6 @@
 <?php
 	namespace App\Entity;
 
-	use App\Api\Models\CharmRankModel;
-	use App\Api\Transformers\CharmRankTransformer;
 	use DaybreakStudios\RestBundle\Entity\AsCrudEntity;
 	use DaybreakStudios\Utility\DoctrineEntities\EntityInterface;
 	use Doctrine\Common\Collections\ArrayCollection;
@@ -17,8 +15,6 @@
 	#[ORM\Table(name: 'charm_ranks')]
 	#[AsCrudEntity(
 		basePath: '/charms/ranks',
-		transformer: CharmRankTransformer::class,
-		dtoClass: CharmRankModel::class,
 		strict: [
 			'charm' => [
 				'*',

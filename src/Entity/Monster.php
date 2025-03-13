@@ -2,8 +2,6 @@
 	namespace App\Entity;
 
 	use DaybreakStudios\RestBundle\Entity\AsCrudEntity;
-	use App\Api\Models\MonsterModel;
-	use App\Api\Transformers\MonsterTransformer;
 	use App\Game\Element;
 	use App\Game\MonsterKind;
 	use App\Game\Species;
@@ -18,8 +16,6 @@
 	#[ORM\Table(name: 'monsters')]
 	#[AsCrudEntity(
 		basePath: '/monsters',
-		transformer: MonsterTransformer::class,
-		dtoClass: MonsterModel::class,
 	)]
 	class Monster implements EntityInterface {
 		use EntityTrait;

@@ -1,8 +1,6 @@
 <?php
 	namespace App\Entity;
 
-	use App\Api\Models\ArmorSetModel;
-	use App\Api\Transformers\ArmorSetTransformer;
 	use App\Game\ArmorKind;
 	use DaybreakStudios\RestBundle\Entity\AsCrudEntity;
 	use DaybreakStudios\Utility\DoctrineEntities\EntityInterface;
@@ -17,8 +15,6 @@
 	#[ORM\Table(name: 'armor_sets')]
 	#[AsCrudEntity(
 		basePath: '/armor/sets',
-		transformer: ArmorSetTransformer::class,
-		dtoClass: ArmorSetModel::class,
 		strict: [
 			'bonus' => self::STRICT_BONUS,
 			'groupBonus' => self::STRICT_BONUS,

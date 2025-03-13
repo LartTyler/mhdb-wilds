@@ -2,8 +2,6 @@
 	namespace App\Entity;
 
 	use DaybreakStudios\RestBundle\Entity\AsCrudEntity;
-	use App\Api\Models\MonsterResistanceModel;
-	use App\Api\Transformers\MonsterResistanceTransformer;
 	use DaybreakStudios\Utility\DoctrineEntities\EntityInterface;
 	use Doctrine\DBAL\Types\Types;
 	use Doctrine\ORM\Mapping as ORM;
@@ -19,8 +17,6 @@
 	])]
 	#[AsCrudEntity(
 		basePath: '/monsters/resistances',
-		transformer: MonsterResistanceTransformer::class,
-		dtoClass: MonsterResistanceModel::class,
 		strict: [
 			'monster' => [
 				'*',

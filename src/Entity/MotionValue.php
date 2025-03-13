@@ -2,8 +2,6 @@
 	namespace App\Entity;
 
 	use DaybreakStudios\RestBundle\Entity\AsCrudEntity;
-	use App\Api\Models\MotionValueModel;
-	use App\Api\Transformers\MotionValueTransformer;
 	use App\Game\DamageKind;
 	use App\Game\WeaponKind;
 	use DaybreakStudios\Utility\DoctrineEntities\EntityInterface;
@@ -13,8 +11,6 @@
 	#[ORM\Table(name: 'motion_values')]
 	#[AsCrudEntity(
 		basePath: '/motion-values',
-		transformer: MotionValueTransformer::class,
-		dtoClass: MotionValueModel::class,
 	)]
 	class MotionValue implements EntityInterface {
 		use EntityTrait;

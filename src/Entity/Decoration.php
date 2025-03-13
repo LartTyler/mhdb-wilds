@@ -1,8 +1,6 @@
 <?php
 	namespace App\Entity;
 
-	use App\Api\Models\DecorationModel;
-	use App\Api\Transformers\DecorationTransformer;
 	use App\Game\DecorationKind;
 	use DaybreakStudios\RestBundle\Entity\AsCrudEntity;
 	use DaybreakStudios\Utility\DoctrineEntities\EntityInterface;
@@ -16,8 +14,6 @@
 	#[ORM\Table(name: 'decorations')]
 	#[AsCrudEntity(
 		basePath: '/decorations',
-		transformer: DecorationTransformer::class,
-		dtoClass: DecorationModel::class,
 		strict: [
 			'skills' => [
 				'skill' => [

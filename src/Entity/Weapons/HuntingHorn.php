@@ -8,7 +8,6 @@
 	use App\Entity\SharpnessTrait;
 	use App\Entity\Weapon;
 	use App\Game\WeaponKind;
-	use DaybreakStudios\RestBundle\Entity\AsCrudEntity;
 	use Doctrine\ORM\Mapping as ORM;
 
 	#[ORM\Entity]

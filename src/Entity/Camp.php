@@ -2,8 +2,6 @@
 	namespace App\Entity;
 
 	use DaybreakStudios\RestBundle\Entity\AsCrudEntity;
-	use App\Api\Models\CampModel;
-	use App\Api\Transformers\CampTransformer;
 	use DaybreakStudios\Utility\DoctrineEntities\EntityInterface;
 	use Doctrine\ORM\Mapping as ORM;
 	use Gedmo\Mapping\Annotation\Translatable;
@@ -12,8 +10,6 @@
 	#[ORM\Table(name: 'camps')]
 	#[AsCrudEntity(
 		basePath: '/locations/camps',
-		transformer: CampTransformer::class,
-		dtoClass: CampModel::class,
 		strict: [
 			'location' => [
 				'camps',

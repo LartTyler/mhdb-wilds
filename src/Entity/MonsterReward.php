@@ -2,8 +2,6 @@
 	namespace App\Entity;
 
 	use DaybreakStudios\RestBundle\Entity\AsCrudEntity;
-	use App\Api\Models\MonsterRewardModel;
-	use App\Api\Transformers\MonsterRewardTransformer;
 	use DaybreakStudios\Utility\DoctrineEntities\EntityInterface;
 	use Doctrine\Common\Collections\ArrayCollection;
 	use Doctrine\Common\Collections\Collection;
@@ -14,8 +12,6 @@
 	#[ORM\Table(name: 'monster_rewards')]
 	#[AsCrudEntity(
 		basePath: '/monsters/rewards',
-		transformer: MonsterRewardTransformer::class,
-		dtoClass: MonsterRewardModel::class,
 		strict: [
 			'monster' => [
 				'*',

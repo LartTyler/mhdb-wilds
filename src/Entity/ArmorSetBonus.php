@@ -1,8 +1,6 @@
 <?php
 	namespace App\Entity;
 
-	use App\Api\Models\ArmorSetBonusModel;
-	use App\Api\Transformers\ArmorSetBonusTransformer;
 	use DaybreakStudios\RestBundle\Entity\AsCrudEntity;
 	use DaybreakStudios\Utility\DoctrineEntities\EntityInterface;
 	use Doctrine\Common\Collections\ArrayCollection;
@@ -15,8 +13,6 @@
 	#[ORM\Table(name: 'armor_set_bonuses')]
 	#[AsCrudEntity(
 		basePath: '/armor/sets/bonuses',
-		transformer: ArmorSetBonusTransformer::class,
-		dtoClass: ArmorSetBonusModel::class,
 		strict: [
 			'skill' => [
 				'*',

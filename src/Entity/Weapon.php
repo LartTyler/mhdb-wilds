@@ -1,8 +1,6 @@
 <?php
 	namespace App\Entity;
 
-	use App\Api\Models\WeaponModel;
-	use App\Api\Transformers\WeaponTransformer;
 	use App\Entity\Weapons\Bow;
 	use App\Entity\Weapons\ChargeBlade;
 	use App\Entity\Weapons\DualBlades;
@@ -53,8 +51,6 @@
 	])]
 	#[AsCrudEntity(
 		basePath: '/weapons',
-		transformer: WeaponTransformer::class,
-		dtoClass: WeaponModel::class,
 		strict: [
 			'crafting' => [
 				'previous' => [

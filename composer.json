@@ -8,7 +8,7 @@
         "ext-ctype": "*",
         "ext-iconv": "*",
         "dbstudios/doctrine-entities": "^1.0",
-        "dbstudios/doctrine-query-document": "dev-main",
+        "dbstudios/doctrine-query-document": "^2.1",
         "dbstudios/php-rest": "dev-feature/bundle-config",
         "doctrine/dbal": "^3",
         "doctrine/doctrine-bundle": "^2.12",
@@ -102,8 +102,5 @@
             "allow-contrib": false,
             "require": "7.2.*"
         }
-    },
-    "require-dev": {
-        "doctrine/doctrine-fixtures-bundle": "^3.6"
     }
 }

@@ -1,8 +1,6 @@
 <?php
 	namespace App\Entity;
 
-	use App\Api\Models\SkillModel;
-	use App\Api\Transformers\SkillTransformer;
 	use App\Game\SkillKind;
 	use DaybreakStudios\RestBundle\Entity\AsCrudEntity;
 	use DaybreakStudios\Utility\DoctrineEntities\EntityInterface;
@@ -18,8 +16,6 @@
 	#[ORM\Table(name: 'skills')]
 	#[AsCrudEntity(
 		basePath: '/skills',
-		transformer: SkillTransformer::class,
-		dtoClass: SkillModel::class,
 	)]
 	class Skill implements EntityInterface {
 		use EntityTrait;
@@ -40,7 +36,7 @@
 		private ?string $description = null;
 
 		#[ORM\Column(nullable: true, enumType: SkillKind::class)]
-		private ?SkillKind $kind = null;
+		private ?SkillKind $kind;
 
 		public function __construct(int $gameId, string $name, SkillKind $kind) {
 			$this->gameId = $gameId;
