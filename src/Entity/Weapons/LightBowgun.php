@@ -4,6 +4,7 @@
 	use App\Entity\LightBowgunAmmo;
 	use App\Entity\Weapon;
 	use App\Game\AmmoKind;
+	use App\Game\LightBowgunSpecialAmmo;
 	use App\Game\WeaponKind;
 	use Doctrine\Common\Collections\ArrayCollection;
 	use Doctrine\Common\Collections\Collection;
@@ -21,6 +22,9 @@
 		#[ORM\OneToMany(mappedBy: 'weapon', targetEntity: LightBowgunAmmo::class, cascade: ['all'], orphanRemoval: true)]
 		private Collection&Selectable $ammo;
 
+		#[ORM\Column(enumType: LightBowgunSpecialAmmo::class)]
+		private LightBowgunSpecialAmmo $specialAmmo;
+
 		public function __construct(int $gameId, string $name, int $rarity) {
 			parent::__construct($gameId, $name, $rarity);
 			$this->ammo = new ArrayCollection();
@@ -37,7 +41,7 @@
 			$ammo = $this->getAmmoByKind($kind);
 
 			if (!$ammo) {
-				$this->getAmmo()->add(new LightBowgunAmmo($this, $kind, $level, $capacity, $rapid));
+				$this->getAmmo()->add($ammo = new LightBowgunAmmo($this, $kind, $level, $capacity, $rapid));
 			} else {
 				$ammo
 					->setLevel($level)
@@ -54,5 +58,24 @@
 				->setMaxResults(1);
 
 			return $this->getAmmo()->matching($criteria)->first() ?: null;
+		}
+
+		public function removeOrphanedAmmoByKind(array $kinds): static {
+			$criteria = Criteria::create()
+				->where(Criteria::expr()->notIn('kind', $kinds));
+
+			foreach ($this->getAmmo()->matching($criteria) as $key => $_)
+				$this->getAmmo()->remove($key);
+
+			return $this;
+		}
+
+		public function getSpecialAmmo(): LightBowgunSpecialAmmo {
+			return $this->specialAmmo;
+		}
+
+		public function setSpecialAmmo(LightBowgunSpecialAmmo $specialAmmo): static {
+			$this->specialAmmo = $specialAmmo;
+			return $this;
 		}
 	}
