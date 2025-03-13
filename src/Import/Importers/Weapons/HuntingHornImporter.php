@@ -17,8 +17,6 @@
 	 */
 	#[AsImporter]
 	class HuntingHornImporter extends AbstractWeaponImporter implements SharpnessImporterInterface {
-		use SharpnessImporterTrait;
-
 		public function __invoke(ImportContext $context): void {
 			$this->run($context, 'HuntingHorn', HuntingHorn::class);
 		}

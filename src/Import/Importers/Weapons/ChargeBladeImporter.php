@@ -13,8 +13,6 @@
 	 */
 	#[AsImporter]
 	class ChargeBladeImporter extends AbstractWeaponImporter implements SharpnessImporterInterface {
-		use SharpnessImporterTrait;
-
 		public function __invoke(ImportContext $context): void {
 			$this->run($context, 'ChargeBlade', ChargeBlade::class);
 		}

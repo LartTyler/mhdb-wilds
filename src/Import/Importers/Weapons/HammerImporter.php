@@ -7,8 +7,6 @@
 
 	#[AsImporter]
 	class HammerImporter extends AbstractWeaponImporter implements SharpnessImporterInterface {
-		use SharpnessImporterTrait;
-
 		public function __invoke(ImportContext $context): void {
 			$this->run($context, 'Hammer', Hammer::class);
 		}

@@ -10,6 +10,7 @@
 	use App\Import\Importers\AbstractImporter;
 	use App\Import\ImportException;
 	use App\Import\Models\Weapons\ElementSpecialModel;
+	use App\Import\Models\Weapons\SharpnessModel;
 	use App\Import\Models\Weapons\SharpnessModelInterface;
 	use App\Import\Models\Weapons\StatusSpecialModel;
 	use App\Import\Models\Weapons\WeaponModel;
@@ -272,14 +273,38 @@
 		}
 
 		/**
-		 * @psalm-param T       $weapon
-		 * @psalm-param D       $data
+		 * @psalm-param T $weapon
+		 * @psalm-param D $data
 		 *
 		 * @param ImportContext $context
-		 * @param Weapon        $weapon
-		 * @param WeaponModel   $data
+		 * @param Weapon $weapon
+		 * @param WeaponModel $data
 		 *
 		 * @return void
 		 */
 		protected function process(ImportContext $context, Weapon $weapon, WeaponModel $data): void {}
+
+		/**
+		 * @param SharpnessInterface $weapon
+		 * @param SharpnessModel     $sharpness
+		 * @param int[]              $handicraft
+		 *
+		 * @return void
+		 */
+		public function setSharpnessData(
+			SharpnessInterface $weapon,
+			SharpnessModel $sharpness,
+			array $handicraft,
+		): void {
+			$weapon->getSharpness()
+				->setRed($sharpness->red)
+				->setOrange($sharpness->orange)
+				->setYellow($sharpness->yellow)
+				->setGreen($sharpness->green)
+				->setBlue($sharpness->blue)
+				->setWhite($sharpness->white)
+				->setPurple($sharpness->purple);
+
+			$weapon->setHandicraft(array_map(fn(int $amount) => $amount / 10, $handicraft));
+		}
 	}

@@ -21,6 +21,8 @@
 		WeaponKind::Lance->value => LanceModel::class,
 		WeaponKind::LightBowgun->value => LightBowgunModel::class,
 		WeaponKind::LongSword->value => LongSwordModel::class,
+		WeaponKind::SwitchAxe->value => SwitchAxeModel::class,
+		WeaponKind::SwordAndShield->value => SwordShieldModel::class,
 	])]
 	class WeaponModel {
 		use IdentifiedTrait;
