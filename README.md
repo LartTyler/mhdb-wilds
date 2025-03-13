@@ -1,7 +1,4 @@
-[![View Documentation](https://gist.github.com/cxmeel/0dbc95191f239b631c3874f4ccf114e2/raw/documentation-compact.svg)](https://docs.wilds.mhdb.io)
-[![Join us on Discord](https://gist.github.com/cxmeel/0dbc95191f239b631c3874f4ccf114e2/raw/discord-compact.svg)](https://discord.gg/6GEHHQh)
-
-[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/E1E41BOLDX)
+[View Documentation](https://docs.wilds.mhdb.io) | [Join us on Discord](https://discord.gg/6GEHHQh)
 
 # About
 This is the source code for the Monster Hunter Wilds database project, forked from
