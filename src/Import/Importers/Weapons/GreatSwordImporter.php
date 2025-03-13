@@ -2,8 +2,10 @@
 	namespace App\Import\Importers\Weapons;
 
 	use App\Entity\Weapons\GreatSword;
+	use App\Import\AsImporter;
 	use App\Import\ImportContext;
 
+	#[AsImporter]
 	class GreatSwordImporter extends AbstractWeaponImporter implements SharpnessImporterInterface {
 		use SharpnessImporterTrait;
 

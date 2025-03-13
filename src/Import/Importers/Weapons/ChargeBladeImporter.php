@@ -3,6 +3,7 @@
 
 	use App\Entity\Weapon as T;
 	use App\Entity\Weapons\ChargeBlade;
+	use App\Import\AsImporter;
 	use App\Import\ImportContext;
 	use App\Import\Models\Weapons\ChargeBladeModel;
 	use App\Import\Models\Weapons\WeaponModel as D;
@@ -10,6 +11,7 @@
 	/**
 	 * @extends AbstractWeaponImporter<ChargeBlade, ChargeBladeModel>
 	 */
+	#[AsImporter]
 	class ChargeBladeImporter extends AbstractWeaponImporter implements SharpnessImporterInterface {
 		use SharpnessImporterTrait;
 

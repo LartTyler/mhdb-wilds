@@ -37,7 +37,7 @@
 			$ammo = $this->getAmmoByKind($kind);
 
 			if (!$ammo) {
-				$this->getAmmo()->add(new HeavyBowgunAmmo($this, $kind, $level, $capacity));
+				$this->getAmmo()->add($ammo = new HeavyBowgunAmmo($this, $kind, $level, $capacity));
 			} else {
 				$ammo
 					->setLevel($level)

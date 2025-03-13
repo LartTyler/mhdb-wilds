@@ -5,6 +5,8 @@
 
 	#[ORM\Embeddable]
 	class DamageValues {
+		public const ELEMENT_COEFFICIENT = 10.0;
+
 		#[ORM\Column(options: ['unsigned' => true])]
 		private int $raw = 0;
 

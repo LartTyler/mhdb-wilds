@@ -3,6 +3,7 @@
 
 	use App\Entity\Weapon;
 	use App\Entity\Weapons\Gunlance;
+	use App\Import\AsImporter;
 	use App\Import\ImportContext;
 	use App\Import\Models\Weapons\GunlanceModel;
 	use App\Import\Models\Weapons\WeaponModel;
@@ -10,6 +11,7 @@
 	/**
 	 * @extends AbstractWeaponImporter<Gunlance, GunlanceModel>
 	 */
+	#[AsImporter]
 	class GunlanceImporter extends AbstractWeaponImporter implements SharpnessImporterInterface {
 		use SharpnessImporterTrait;
 

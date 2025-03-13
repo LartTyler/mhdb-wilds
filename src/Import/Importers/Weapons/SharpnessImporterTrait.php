@@ -29,6 +29,6 @@
 				->setWhite($sharpness->white)
 				->setPurple($sharpness->purple);
 
-			$weapon->setHandicraft($handicraft);
+			$weapon->setHandicraft(array_map(fn(int $amount) => $amount / 10, $handicraft));
 		}
 	}

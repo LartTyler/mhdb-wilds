@@ -2,8 +2,10 @@
 	namespace App\Import\Importers\Weapons;
 
 	use App\Entity\Weapons\Hammer;
+	use App\Import\AsImporter;
 	use App\Import\ImportContext;
 
+	#[AsImporter]
 	class HammerImporter extends AbstractWeaponImporter implements SharpnessImporterInterface {
 		use SharpnessImporterTrait;
 

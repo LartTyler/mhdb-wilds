@@ -3,7 +3,6 @@
 
 	use App\Entity\Weapon;
 	use App\Game\BowCoating;
-	use App\Game\DamageKind;
 	use App\Game\WeaponKind;
 	use Doctrine\DBAL\Types\Types;
 	use Doctrine\ORM\Mapping as ORM;

@@ -3,7 +3,7 @@
 
 	use App\Game\BowCoating;
 
-	class BowModel {
+	class BowModel extends WeaponModel {
 		/**
 		 * @var BowCoating[]
 		 */

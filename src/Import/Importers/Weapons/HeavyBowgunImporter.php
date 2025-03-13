@@ -4,6 +4,7 @@
 	use App\Entity\Weapon;
 	use App\Entity\Weapons\HeavyBowgun;
 	use App\Game\AmmoKind;
+	use App\Import\AsImporter;
 	use App\Import\ImportContext;
 	use App\Import\Models\Weapons\HeavyBowgunModel;
 	use App\Import\Models\Weapons\WeaponModel;
@@ -11,6 +12,7 @@
 	/**
 	 * @extends AbstractWeaponImporter<HeavyBowgun, HeavyBowgunModel>
 	 */
+	#[AsImporter]
 	class HeavyBowgunImporter extends AbstractWeaponImporter {
 		public function __invoke(ImportContext $context): void {
 			$this->run($context, 'HeavyBowgun', HeavyBowgun::class);

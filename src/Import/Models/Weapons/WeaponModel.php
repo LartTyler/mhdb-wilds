@@ -3,6 +3,7 @@
 
 	use App\Game\WeaponKind;
 	use App\Import\Models\DescriptionTranslationsTrait;
+	use App\Import\Models\IdentifiedTrait;
 	use App\Import\Models\NameTranslationsTrait;
 	use Symfony\Component\Serializer\Attribute\DiscriminatorMap;
 	use Symfony\Component\Serializer\Attribute\SerializedName;
@@ -10,19 +11,17 @@
 	#[DiscriminatorMap('kind', [
 		WeaponKind::Bow->value => BowModel::class,
 		WeaponKind::ChargeBlade->value => ChargeBladeModel::class,
-		WeaponKind::DualBlades->name => DualBladesModel::class,
-		WeaponKind::GreatSword->name => GreatSwordModel::class,
-		WeaponKind::Gunlance->name => GunlanceModel::class,
-		WeaponKind::Hammer->name => HammerModel::class,
-		WeaponKind::HeavyBowgun->name => HeavyBowgunModel::class,
-		WeaponKind::HuntingHorn->name => HuntingHornModel::class,
+		WeaponKind::DualBlades->value => DualBladesModel::class,
+		WeaponKind::GreatSword->value => GreatSwordModel::class,
+		WeaponKind::Gunlance->value => GunlanceModel::class,
+		WeaponKind::Hammer->value => HammerModel::class,
+		WeaponKind::HeavyBowgun->value => HeavyBowgunModel::class,
+		WeaponKind::HuntingHorn->value => HuntingHornModel::class,
 	])]
 	class WeaponModel {
+		use IdentifiedTrait;
 		use NameTranslationsTrait;
 		use DescriptionTranslationsTrait;
-
-		#[SerializedName('game_id')]
-		public int $gameId;
 
 		public WeaponKind $kind;
 		public int $rarity;

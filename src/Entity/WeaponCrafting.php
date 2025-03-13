@@ -1,9 +1,9 @@
 <?php
 	namespace App\Entity;
 
-	use DaybreakStudios\RestBundle\Entity\AsCrudEntity;
 	use App\Api\Models\WeaponCraftingModel;
 	use App\Api\Transformers\WeaponCraftingTransformer;
+	use DaybreakStudios\RestBundle\Entity\AsCrudEntity;
 	use DaybreakStudios\Utility\DoctrineEntities\EntityInterface;
 	use Doctrine\Common\Collections\ArrayCollection;
 	use Doctrine\Common\Collections\Collection;
@@ -42,11 +42,11 @@
 		private Weapon $weapon;
 
 		#[ORM\Column]
-		private bool $craftable;
+		private bool $craftable = false;
 
 		#[ORM\ManyToOne]
 		#[ORM\JoinColumn(onDelete: 'SET NULL')]
-		private ?Weapon $previous;
+		private ?Weapon $previous = null;
 
 		/**
 		 * @var Collection<Weapon>&Selectable<Weapon>
@@ -72,10 +72,8 @@
 		#[ORM\Column(options: ['unsigned' => true])]
 		private int $upgradeZennyCost = 0;
 
-		public function __construct(Weapon $weapon, bool $craftable, ?Weapon $previous) {
+		public function __construct(Weapon $weapon) {
 			$this->weapon = $weapon;
-			$this->craftable = $craftable;
-			$this->previous = $previous;
 
 			$this->branches = new ArrayCollection();
 			$this->craftingMaterials = new ArrayCollection();

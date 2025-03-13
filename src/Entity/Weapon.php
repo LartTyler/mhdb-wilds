@@ -18,6 +18,8 @@
 	use App\Entity\Weapons\SwitchAxe;
 	use App\Entity\Weapons\SwordShield;
 	use App\Game\Elderseal;
+	use App\Game\Element;
+	use App\Game\Status;
 	use App\Game\WeaponKind;
 	use DaybreakStudios\RestBundle\Entity\AsCrudEntity;
 	use DaybreakStudios\Utility\DoctrineEntities\EntityInterface;
@@ -30,7 +32,7 @@
 
 	#[ORM\Entity]
 	#[ORM\Table(name: 'weapons')]
-	#[ORM\UniqueConstraint(fields: ['kind', 'gameId'])]
+	#[ORM\UniqueConstraint(columns: ['kind', 'game_id'])]
 	#[ORM\InheritanceType('SINGLE_TABLE')]
 	#[ORM\DiscriminatorColumn(name: 'kind', enumType: WeaponKind::class)]
 	#[ORM\DiscriminatorMap([
@@ -55,68 +57,84 @@
 		dtoClass: WeaponModel::class,
 		strict: [
 			'crafting' => [
+				'previous' => [
+					'*',
+					'-id',
+					'-name',
+				],
 				'branches' => [
 					'*',
 					'-id',
 					'-name',
 				],
 			],
+			// Hunting Horn
+			'melody' => [
+				'songs' => [
+					'melodies',
+				]
+			]
 		]
 	)]
 	abstract class Weapon implements EntityInterface {
 		use EntityTrait;
 
 		#[ORM\Column]
-		private int $gameId;
+		protected int $gameId;
 
-		private WeaponKind $kind;
+		protected WeaponKind $kind;
 
 		#[ORM\Embedded(class: DamageValues::class, columnPrefix: 'attack_')]
-		private DamageValues $damage;
+		protected DamageValues $damage;
 
 		/**
 		 * @var Selectable<WeaponSpecial>&Collection<WeaponSpecial>
 		 */
 		#[ORM\OneToMany(mappedBy: 'weapon', targetEntity: WeaponSpecial::class, cascade: ['all'], orphanRemoval: true)]
-		private Collection&Selectable $specials;
+		protected Collection&Selectable $specials;
 
 		#[Translatable]
 		#[ORM\Column(nullable: true)]
-		private ?string $name;
+		protected ?string $name;
+
+		#[Translatable]
+		#[ORM\Column(nullable: true)]
+		protected ?string $description = null;
 
 		#[ORM\Column]
-		private int $rarity;
+		protected int $rarity;
 
 		/**
 		 * @var Selectable<Skill>&Collection<Skill>
 		 */
 		#[ORM\ManyToMany(targetEntity: Skill::class)]
 		#[ORM\JoinTable(name: 'weapon_skills')]
-		private Collection&Selectable $skills;
+		protected Collection&Selectable $skills;
 
 		#[ORM\Column(options: ['unsigned' => true])]
-		private int $defenseBonus = 0;
+		protected int $defenseBonus = 0;
 
 		#[ORM\Column(nullable: true)]
-		private ?Elderseal $elderseal = null;
+		protected ?Elderseal $elderseal = null;
 
-		#[ORM\Column(options: ['unsigned' => true])]
-		private int $affinity = 0;
+		#[ORM\Column]
+		protected int $affinity = 0;
 
 		/**
 		 * @var int[]
 		 */
 		#[ORM\Column(type: Types::JSON)]
-		private array $slots = [];
+		protected array $slots = [];
 
 		#[ORM\OneToOne(mappedBy: 'weapon', targetEntity: WeaponCrafting::class, cascade: ['all'], orphanRemoval: true)]
-		private ?WeaponCrafting $crafting = null;
+		protected WeaponCrafting $crafting;
 
 		public function __construct(int $gameId, string $name, int $rarity) {
 			$this->gameId = $gameId;
 			$this->name = $name;
 			$this->rarity = $rarity;
 
+			$this->crafting = new WeaponCrafting($this);
 			$this->damage = new DamageValues();
 			$this->specials = new ArrayCollection();
 			$this->skills = new ArrayCollection();
@@ -134,13 +152,8 @@
 			return $this;
 		}
 
-		public function getCrafting(): ?WeaponCrafting {
+		public function getCrafting(): WeaponCrafting {
 			return $this->crafting;
-		}
-
-		public function setCrafting(?WeaponCrafting $crafting): static {
-			$this->crafting = $crafting;
-			return $this;
 		}
 
 		public function getRarity(): int {
@@ -167,12 +180,59 @@
 			return $this->specials;
 		}
 
+		public function setStatusSpecial(Status $status, int $raw, bool $hidden): WeaponStatus {
+			foreach ($this->getSpecials() as $special) {
+				if ($special instanceof WeaponStatus && $special->getStatus() === $status) {
+					$special->getDamage()
+						->setRaw($raw)
+						->setDisplay($raw * DamageValues::ELEMENT_COEFFICIENT);
+
+					return $special;
+				}
+			}
+
+			$this->getSpecials()->add($special = new WeaponStatus($this, $status, $hidden));
+			$special->getDamage()
+				->setRaw($raw)
+				->setDisplay($raw * DamageValues::ELEMENT_COEFFICIENT);
+
+			return $special;
+		}
+
+		public function setElementSpecial(Element $element, int $raw, bool $hidden): WeaponElement {
+			foreach ($this->getSpecials() as $special) {
+				if ($special instanceof WeaponElement && $special->getElement() === $element) {
+					$special->getDamage()
+						->setRaw($raw)
+						->setDisplay($raw * DamageValues::ELEMENT_COEFFICIENT);
+
+					return $special;
+				}
+			}
+
+			$this->getSpecials()->add($special = new WeaponElement($this, $element, $hidden));
+			$special->getDamage()
+				->setRaw($raw)
+				->setDisplay($raw * DamageValues::ELEMENT_COEFFICIENT);
+
+			return $special;
+		}
+
 		public function getName(): ?string {
 			return $this->name;
 		}
 
 		public function setName(?string $name): static {
 			$this->name = $name;
+			return $this;
+		}
+
+		public function getDescription(): ?string {
+			return $this->description;
+		}
+
+		public function setDescription(?string $description): static {
+			$this->description = $description;
 			return $this;
 		}
 
