@@ -19,6 +19,7 @@
 	use App\Game\Element;
 	use App\Game\Status;
 	use App\Game\WeaponKind;
+	use App\Repository\WeaponRepository;
 	use DaybreakStudios\RestBundle\Entity\AsCrudEntity;
 	use DaybreakStudios\Utility\DoctrineEntities\EntityInterface;
 	use Doctrine\Common\Collections\ArrayCollection;
@@ -28,7 +29,7 @@
 	use Doctrine\ORM\Mapping as ORM;
 	use Gedmo\Mapping\Annotation\Translatable;
 
-	#[ORM\Entity]
+	#[ORM\Entity(repositoryClass: WeaponRepository::class)]
 	#[ORM\Table(name: 'weapons')]
 	#[ORM\UniqueConstraint(columns: ['kind', 'game_id'])]
 	#[ORM\InheritanceType('SINGLE_TABLE')]

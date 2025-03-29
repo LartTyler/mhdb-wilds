@@ -23,11 +23,9 @@
 	 */
 	abstract class AbstractWeaponImporter extends AbstractImporter {
 		/**
-		 * @psalm-param class-string<T> $entityClass
-		 *
-		 * @param ImportContext         $context
-		 * @param string                $entityName
-		 * @param string                $entityClass
+		 * @param ImportContext   $context
+		 * @param string          $entityName
+		 * @param class-string<T> $entityClass
 		 *
 		 * @return void
 		 */
@@ -47,11 +45,7 @@
 				$visited[] = $data->id;
 
 				/** @var T $weapon */
-				$weapon = $this->entityManager->getRepository($entityClass)->findOneBy(
-					[
-						'gameId' => $data->id,
-					],
-				);
+				$weapon = $this->entityManager->getRepository(Weapon::class)->findOneByGameId($entityClass, $data->id);
 
 				if (!$weapon) {
 					$weapon = $this->createWeapon($entityClass, $data);
@@ -273,12 +267,12 @@
 		}
 
 		/**
-		 * @psalm-param T $weapon
-		 * @psalm-param D $data
+		 * @psalm-param T       $weapon
+		 * @psalm-param D       $data
 		 *
 		 * @param ImportContext $context
-		 * @param Weapon $weapon
-		 * @param WeaponModel $data
+		 * @param Weapon        $weapon
+		 * @param WeaponModel   $data
 		 *
 		 * @return void
 		 */
