@@ -142,6 +142,7 @@
 			$this->entityManager->createQueryBuilder()
 				->delete(Weapon::class, 'weapon')
 				->where('weapon.gameId NOT IN (:visited)')
+				->andWhere('weapon INSTANCE OF ' . $entityClass)
 				->setParameter('visited', $visited)
 				->getQuery()
 				->execute();
