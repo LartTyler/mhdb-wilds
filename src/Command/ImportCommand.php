@@ -5,6 +5,7 @@
 	use App\Import\BatchManager;
 	use App\Import\ImportContext;
 	use App\Import\ImporterInterface;
+	use App\Import\Importers\Weapons\AbstractWeaponImporter;
 	use App\Import\ProgressIndicator;
 	use Doctrine\ORM\EntityManagerInterface;
 	use Symfony\Component\Console\Attribute\AsCommand;
@@ -98,6 +99,9 @@
 				if (str_contains($className, $filter))
 					return true;
 			}
+
+			if (is_a($class, AbstractWeaponImporter::class, true) && in_array('weapons', $filters))
+				return true;
 
 			return false;
 		}
