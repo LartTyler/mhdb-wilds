@@ -3,7 +3,7 @@
 
 	use App\Game\ChargeBladePhial;
 
-	class ChargeBladeModel extends WeaponModel {
+	class ChargeBladeModel extends WeaponModel implements SharpnessModelInterface {
 		use SharpnessTrait;
 
 		public ChargeBladePhial $phial;
