@@ -9,7 +9,7 @@
         "ext-iconv": "*",
         "dbstudios/doctrine-entities": "^1.0",
         "dbstudios/doctrine-query-document": "^2.1",
-        "dbstudios/php-rest": "dev-feature/bundle-config",
+        "dbstudios/php-rest": "^0.4",
         "doctrine/dbal": "^3",
         "doctrine/doctrine-bundle": "^2.12",
         "doctrine/doctrine-migrations-bundle": "^3.3",

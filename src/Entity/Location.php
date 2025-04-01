@@ -17,6 +17,7 @@
 	)]
 	class Location implements EntityInterface {
 		use EntityTrait;
+		use GameIdTrait;
 
 		#[ORM\Column(nullable: true)]
 		#[Gedmo\Translatable]
@@ -31,7 +32,8 @@
 		#[ORM\OneToMany(mappedBy: 'location', targetEntity: Camp::class, cascade: ['all'], orphanRemoval: true)]
 		private Collection&Selectable $camps;
 
-		public function __construct(string $name, int $zoneCount) {
+		public function __construct(int $gameId, string $name, int $zoneCount) {
+			$this->gameId = $gameId;
 			$this->name = $name;
 			$this->zoneCount = $zoneCount;
 
@@ -66,5 +68,15 @@
 		public function getCamp(int $zone): ?Camp {
 			$criteria = Criteria::create()->where(Criteria::expr()->eq('zone', $zone));
 			return $this->getCamps()->matching($criteria)->first() ?: null;
+		}
+
+		public function removeOrphanedCampsByGameId(array $ids): static {
+			$criteria = Criteria::create()->where(Criteria::expr()->notIn('gameId', $ids));
+			$matched = $this->getCamps()->matching($criteria);
+
+			foreach ($matched as $key => $_)
+				$this->getCamps()->remove($key);
+
+			return $this;
 		}
 	}

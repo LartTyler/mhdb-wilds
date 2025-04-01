@@ -1,7 +1,8 @@
 daybreak_studios_rest:
-    serializer: '@app.serializer'
-    validator: '@validator'
+    serializer: 'app.serializer'
+    validator: 'validator'
     crud:
+        enabled: true
         entities:
             - '%kernel.project_dir%/src/Entity'
 

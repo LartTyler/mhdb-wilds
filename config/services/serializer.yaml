@@ -11,16 +11,10 @@ services:
                 - '@serializer.normalizer.datetime'
                 - '@serializer.normalizer.backed_enum'
                 - '@serializer.normalizer.problem'
-                - '@dbstudios_rest.serializer.denormalizer.entity'
-                - '@dbstudios_rest.serializer.normalizer.object'
+                - '@daybreak_studios_rest.serializer.normalizer.object'
+                - '@daybreak_studios_rest.serializer.denormalizer.entity'
             -
                 - '@serializer.encoder.json'
                 - '@serializer.encoder.csv'
                 - '@serializer.encoder.xml'
                 - '@serializer.encoder.yaml'
-
-    DaybreakStudios\RestBundle\Serializer\ObjectNormalizer:
-        bind:
-            $objectNormalizer: '@serializer.normalizer.object'
-
-    DaybreakStudios\RestBundle\Serializer\EntityDenormalizer: ~

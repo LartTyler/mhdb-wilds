@@ -7,7 +7,7 @@ controllers:
         _format: json
 
 dbstudios_rest.crud:
-    resource: dbstudios_rest.crud.route_loader
+    resource: daybreak_studios_rest.crud.route_loader
     type: service
     defaults:
         _format: json

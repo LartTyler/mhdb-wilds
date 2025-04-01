@@ -1,14 +1,17 @@
 <?php
 	namespace App\Entity;
 
-	use DaybreakStudios\RestBundle\Entity\AsCrudEntity;
 	use App\Game\Element;
 	use App\Game\MonsterKind;
 	use App\Game\Species;
+	use App\Game\VariantKind;
+	use DaybreakStudios\RestBundle\Entity\AsCrudEntity;
 	use DaybreakStudios\Utility\DoctrineEntities\EntityInterface;
 	use Doctrine\Common\Collections\ArrayCollection;
 	use Doctrine\Common\Collections\Collection;
+	use Doctrine\Common\Collections\Criteria;
 	use Doctrine\Common\Collections\Selectable;
+	use Doctrine\DBAL\Types\Types;
 	use Doctrine\ORM\Mapping as ORM;
 	use Gedmo\Mapping\Annotation\Translatable;
 
@@ -16,9 +19,15 @@
 	#[ORM\Table(name: 'monsters')]
 	#[AsCrudEntity(
 		basePath: '/monsters',
+		strict: [
+			'locations' => [
+				'camps',
+			]
+		]
 	)]
 	class Monster implements EntityInterface {
 		use EntityTrait;
+		use GameIdTrait;
 
 		#[ORM\Column(enumType: MonsterKind::class)]
 		private MonsterKind $kind;
@@ -30,9 +39,23 @@
 		#[ORM\Column(nullable: true)]
 		private ?string $name;
 
+		#[ORM\Embedded]
+		private MonsterSize $size;
+
 		#[Translatable]
-		#[ORM\Column(nullable: true)]
+		#[ORM\Column(type: Types::TEXT, nullable: true)]
 		private ?string $description = null;
+
+		#[Translatable]
+		#[ORM\Column(type: Types::TEXT, nullable: true)]
+		private ?string $features = null;
+
+		#[Translatable]
+		#[ORM\Column(type: Types::TEXT, nullable: true)]
+		private ?string $tips = null;
+
+		#[ORM\Column(options: ['unsigned' => true])]
+		private int $baseHealth = 0;
 
 		/**
 		 * @var Selectable<Ailment>&Collection<Ailment>
@@ -67,21 +90,34 @@
 		private Collection&Selectable $rewards;
 
 		/**
+		 * @var Selectable<MonsterVariant>&Collection<MonsterVariant>
+		 */
+		#[ORM\OneToMany(mappedBy: 'monster', targetEntity: MonsterVariant::class, cascade: ['all'], orphanRemoval: true)]
+		private Collection&Selectable $variants;
+
+		/**
 		 * @var Element[]
 		 */
 		#[ORM\Column(enumType: Element::class)]
 		private array $elements = [];
 
-		public function __construct(MonsterKind $kind, Species $species, string $name) {
+		public function __construct(int $gameId, MonsterKind $kind, Species $species, string $name) {
+			$this->gameId = $gameId;
 			$this->kind = $kind;
 			$this->species = $species;
 			$this->name = $name;
+			$this->size = new MonsterSize();
 
 			$this->ailments = new ArrayCollection();
 			$this->locations = new ArrayCollection();
 			$this->resistances = new ArrayCollection();
 			$this->weaknesses = new ArrayCollection();
 			$this->rewards = new ArrayCollection();
+			$this->variants = new ArrayCollection();
+		}
+
+		public function getSize(): MonsterSize {
+			return $this->size;
 		}
 
 		public function getKind(): MonsterKind {
@@ -169,6 +205,63 @@
 		 */
 		public function setElements(array $elements): static {
 			$this->elements = $elements;
+			return $this;
+		}
+
+		public function getFeatures(): ?string {
+			return $this->features;
+		}
+
+		public function setFeatures(?string $features): static {
+			$this->features = $features;
+			return $this;
+		}
+
+		public function getTips(): ?string {
+			return $this->tips;
+		}
+
+		public function setTips(?string $tips): static {
+			$this->tips = $tips;
+			return $this;
+		}
+
+		public function getBaseHealth(): int {
+			return $this->baseHealth;
+		}
+
+		public function setBaseHealth(int $baseHealth): static {
+			$this->baseHealth = $baseHealth;
+			return $this;
+		}
+
+		/**
+		 * @return Collection<MonsterVariant>&Selectable<MonsterVariant>
+		 */
+		public function getVariants(): Selectable&Collection {
+			return $this->variants;
+		}
+
+		public function getVariant(VariantKind $kind): ?MonsterVariant {
+			$criteria = Criteria::create()
+				->where(Criteria::expr()->eq('kind', $kind))
+				->setMaxResults(1);
+
+			return $this->getVariants()->matching($criteria)->first() ?: null;
+		}
+
+		/**
+		 * @param VariantKind[] $kinds
+		 *
+		 * @return $this
+		 */
+		public function removeOrphanedVariants(array $kinds): static {
+			$criteria = Criteria::create()->where(Criteria::expr()->notIn('kind', $kinds));
+			$matching = $this->getVariants()->matching($criteria);
+
+			foreach ($matching as $key => $_)
+				$this->getVariants()->remove($key);
+
 			return $this;
 		}
 	}
