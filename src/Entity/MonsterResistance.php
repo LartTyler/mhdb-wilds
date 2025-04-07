@@ -14,6 +14,7 @@
 	#[ORM\DiscriminatorMap([
 		self::KIND_ELEMENT => MonsterElementResistance::class,
 		self::KIND_STATUS => MonsterStatusResistance::class,
+		self::KIND_EFFECT => MonsterEffectResistance::class,
 	])]
 	#[AsCrudEntity(
 		basePath: '/monsters/resistances',
@@ -28,6 +29,7 @@
 	class MonsterResistance implements EntityInterface {
 		public const KIND_ELEMENT = 'element';
 		public const KIND_STATUS = 'status';
+		public const KIND_EFFECT = 'effect';
 
 		use EntityTrait;
 

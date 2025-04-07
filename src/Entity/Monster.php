@@ -22,7 +22,7 @@
 		strict: [
 			'locations' => [
 				'camps',
-			]
+			],
 		]
 	)]
 	class Monster implements EntityInterface {
@@ -96,6 +96,12 @@
 		private Collection&Selectable $variants;
 
 		/**
+		 * @var Selectable<MonsterPart>&Collection<MonsterPart>
+		 */
+		#[ORM\OneToMany(mappedBy: 'monster', targetEntity: MonsterPart::class, cascade: ['all'], orphanRemoval: true)]
+		private Collection&Selectable $breakableParts;
+
+		/**
 		 * @var Element[]
 		 */
 		#[ORM\Column(enumType: Element::class)]
@@ -114,6 +120,7 @@
 			$this->weaknesses = new ArrayCollection();
 			$this->rewards = new ArrayCollection();
 			$this->variants = new ArrayCollection();
+			$this->breakableParts = new ArrayCollection();
 		}
 
 		public function getSize(): MonsterSize {
@@ -191,6 +198,21 @@
 			return $this->rewards;
 		}
 
+		public function addReward(Item $item): MonsterReward {
+			$criteria = Criteria::create()
+				->where(Criteria::expr()->eq('item', $item))
+				->setMaxResults(1);
+
+			$reward = $this->getRewards()->matching($criteria)->first() ?: null;
+
+			if (!$reward) {
+				$reward = new MonsterReward($this, $item);
+				$this->getRewards()->add($reward);
+			}
+
+			return $reward;
+		}
+
 		/**
 		 * @return Element[]
 		 */
@@ -263,5 +285,12 @@
 				$this->getVariants()->remove($key);
 
 			return $this;
+		}
+
+		/**
+		 * @return Selectable<MonsterPart>&Collection<MonsterPart>
+		 */
+		public function getBreakableParts(): Collection&Selectable {
+			return $this->breakableParts;
 		}
 	}

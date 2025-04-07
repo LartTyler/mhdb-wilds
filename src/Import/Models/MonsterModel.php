@@ -36,4 +36,25 @@
 		 * @var int[]
 		 */
 		public array $locations;
+
+		/**
+		 * @var MonsterWeaknessModel[]
+		 */
+		public array $weaknesses;
+
+		/**
+		 * @var MonsterResistanceModel[]
+		 */
+		public array $resistances;
+
+		/**
+		 * @var MonsterPartModel[]
+		 */
+		#[SerializedName('breakable_parts')]
+		public array $breakableParts;
+
+		/**
+		 * @var MonsterRewardModel[]
+		 */
+		public array $rewards;
 	}

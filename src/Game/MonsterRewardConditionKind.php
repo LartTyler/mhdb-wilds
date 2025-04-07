@@ -3,11 +3,14 @@
 
 	enum MonsterRewardConditionKind: string {
 		case Carve = 'carve';
-		case Investigation = 'investigation';
-		case Mining = 'mining';
-		case Palico = 'palico';
-		case Reward = 'reward';
-		case Shiny = 'shiny';
-		case Track = 'track';
-		case Wound = 'wound';
+		case CarveSevered = 'carve-severed';
+		case EndemicCapture = 'endemic-capture';
+		case TargetReward = 'target-reward';
+		case BrokenPart = 'broken-part';
+		case WoundDestroyed = 'wound-destroyed';
+		case CarveRotten = 'carve-rotten';
+		case SlingerGather = 'slinger-gather';
+		case CarveRottenSevered = 'carve-rotten-severed';
+		case TemperedWoundDestroyed = 'tempered-wound-destroyed';
+		case CarveCrystallized = 'carve-crystallized';
 	}

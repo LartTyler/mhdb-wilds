@@ -43,7 +43,10 @@
 
 		#[Translatable]
 		#[ORM\Column(nullable: true)]
-		private ?string $subtype = null;
+		private ?string $description = null;
+
+		#[ORM\Column(nullable: true)]
+		private ?string $part = null;
 
 		public function __construct(
 			MonsterReward $reward,
@@ -95,12 +98,21 @@
 			return $this;
 		}
 
-		public function getSubtype(): ?string {
-			return $this->subtype;
+		public function getDescription(): ?string {
+			return $this->description;
 		}
 
-		public function setSubtype(?string $subtype): static {
-			$this->subtype = $subtype;
+		public function setDescription(?string $description): static {
+			$this->description = $description;
+			return $this;
+		}
+
+		public function getPart(): ?string {
+			return $this->part;
+		}
+
+		public function setPart(?string $part): static {
+			$this->part = $part;
 			return $this;
 		}
 	}

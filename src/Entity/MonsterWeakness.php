@@ -14,6 +14,7 @@
 	#[ORM\DiscriminatorMap([
 		self::KIND_ELEMENT => MonsterElementWeakness::class,
 		self::KIND_STATUS => MonsterStatusWeakness::class,
+		self::KIND_EFFECT => MonsterEffectWeakness::class,
 	])]
 	#[AsCrudEntity(
 		basePath: '/monsters/weaknesses',
@@ -28,6 +29,7 @@
 	abstract class MonsterWeakness implements EntityInterface {
 		public const KIND_ELEMENT = 'element';
 		public const KIND_STATUS = 'status';
+		public const KIND_EFFECT = 'effect';
 
 		use EntityTrait;
 
