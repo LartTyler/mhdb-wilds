@@ -41,10 +41,6 @@
 		#[ORM\Column(options: ['unsigned' => true])]
 		private int $chance;
 
-		#[Translatable]
-		#[ORM\Column(nullable: true)]
-		private ?string $description = null;
-
 		#[ORM\Column(nullable: true)]
 		private ?string $part = null;
 
@@ -95,15 +91,6 @@
 
 		public function setChance(int $chance): static {
 			$this->chance = $chance;
-			return $this;
-		}
-
-		public function getDescription(): ?string {
-			return $this->description;
-		}
-
-		public function setDescription(?string $description): static {
-			$this->description = $description;
 			return $this;
 		}
 

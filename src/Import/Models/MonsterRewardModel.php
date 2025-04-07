@@ -8,6 +8,7 @@
 	class MonsterRewardModel {
 		public Rank $rank;
 		public MonsterRewardConditionKind $kind;
+		public ?string $part = null;
 
 		#[SerializedName('item_id')]
 		public int $itemId;

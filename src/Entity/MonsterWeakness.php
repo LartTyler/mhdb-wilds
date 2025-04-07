@@ -46,7 +46,7 @@
 		private int $level;
 
 		#[Translatable]
-		#[ORM\Column(type: Types::TEXT, nullable: true)]
+		#[ORM\Column(name: '`condition`', type: Types::TEXT, nullable: true)]
 		private ?string $condition = null;
 
 		public function __construct(Monster $monster, int $level) {

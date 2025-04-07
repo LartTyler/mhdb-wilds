@@ -18,7 +18,7 @@
 		public int $level;
 
 		/**
-		 * @var array<Locale::*, string>
+		 * @var array<Locale::*, string>|null
 		 */
-		public array $condition;
+		public ?array $condition;
 	}

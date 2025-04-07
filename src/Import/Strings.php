@@ -12,7 +12,7 @@
 		 *
 		 * @return string
 		 */
-		public static function clean(string $input): string {w
+		public static function clean(string $input): string {
 			return str_replace(["-\r\n", "\r\n"], ['-', ' '], $input);
 		}
 	}

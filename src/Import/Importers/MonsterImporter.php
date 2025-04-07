@@ -154,6 +154,11 @@
 					else
 						throw new \RuntimeException('Unrecognized weakness model ' . $weaknessData::class);
 
+					if (isset($weaknessData->condition)) {
+						foreach ($weaknessData->condition as $locale => $value)
+							$strings->translate($weakness, 'condition', $locale, $value);
+					}
+
 					$monster->getWeaknesses()->add($weakness);
 				}
 
@@ -212,15 +217,18 @@
 						throw ImportException::notFound('item', 'gameId', $rewardData->itemId, 'monster rewards');
 
 					$reward = $monster->addReward($item);
-					$reward->getConditions()->add(
-						new MonsterRewardCondition(
-							$reward,
-							$rewardData->kind,
-							$rewardData->rank,
-							$rewardData->amount,
-							$rewardData->chance,
-						),
+					$cond = new MonsterRewardCondition(
+						$reward,
+						$rewardData->kind,
+						$rewardData->rank,
+						$rewardData->amount,
+						$rewardData->chance,
 					);
+
+					if (isset($rewardData->part))
+						$cond->setPart($rewardData->part);
+
+					$reward->getConditions()->add($cond);
 				}
 
 				$context->batch->increment(count($data->breakableParts) + count($data->rewards) + 1);
