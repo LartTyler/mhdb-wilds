@@ -29,6 +29,10 @@
 
 		#[Translatable]
 		#[ORM\Column(type: Types::TEXT, nullable: true)]
+		private ?string $name = null;
+
+		#[Translatable]
+		#[ORM\Column(type: Types::TEXT, nullable: true)]
 		private ?string $description = null;
 
 		public function __construct(Skill $skill, int $level) {
@@ -46,6 +50,15 @@
 
 		public function setLevel(int $level): static {
 			$this->level = $level;
+			return $this;
+		}
+
+		public function getName(): ?string {
+			return $this->name;
+		}
+
+		public function setName(?string $name): static {
+			$this->name = $name;
 			return $this;
 		}
 

@@ -61,8 +61,13 @@
 					$visitedLevels[$rankData->level] = true;
 					$rank = $skill->getOrCreateRank($rankData->level);
 
-					foreach ($rankData->descriptions as $locale => $desc)
+					foreach ($rankData->descriptions as $locale => $desc) {
 						$strings->translate($rank, 'description', $locale, Strings::clean($desc));
+
+						// Only set bonus skills appear to have names.
+						if (isset($rankData->names) && $name = $rankData->names[$locale] ?? null)
+							$strings->translate($rank, 'name', $locale, Strings::clean($name));
+					}
 
 					$rankObjects += count($rankData->descriptions) + 1;
 				}
