@@ -73,6 +73,9 @@
 					'-name',
 				],
 			],
+			'series' => [
+				'weapons',
+			],
 			// Hunting Horn
 			'melody' => [
 				'songs' => [
@@ -133,6 +136,10 @@
 
 		#[ORM\OneToOne(mappedBy: 'weapon', targetEntity: WeaponCrafting::class, cascade: ['all'], orphanRemoval: true)]
 		protected WeaponCrafting $crafting;
+
+		#[ORM\ManyToOne(targetEntity: WeaponSeries::class, inversedBy: 'weapons')]
+		#[ORM\JoinColumn(onDelete: 'CASCADE')]
+		protected ?WeaponSeries $series;
 
 		public function __construct(int $gameId, string $name, int $rarity) {
 			$this->gameId = $gameId;
@@ -290,5 +297,14 @@
 		 */
 		public function getSkills(): Selectable&Collection {
 			return $this->skills;
+		}
+
+		public function getSeries(): ?WeaponSeries {
+			return $this->series;
+		}
+
+		public function setSeries(?WeaponSeries $series): static {
+			$this->series = $series;
+			return $this;
 		}
 	}

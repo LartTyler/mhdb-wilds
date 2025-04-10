@@ -6,6 +6,7 @@
 	use App\Entity\SharpnessInterface;
 	use App\Entity\Skill;
 	use App\Entity\Weapon;
+	use App\Entity\WeaponSeries;
 	use App\Import\ImportContext;
 	use App\Import\Importers\AbstractImporter;
 	use App\Import\ImportException;
@@ -131,6 +132,20 @@
 					$weapon->getSkills()->add($rank);
 					$objectCounter += 2;
 				}
+
+				if ($data->seriesId !== null) {
+					$series = $this->entityManager->getRepository(WeaponSeries::class)->findOneBy(
+						[
+							'gameId' => $data->seriesId,
+						],
+					);
+
+					if (!$series)
+						throw ImportException::notFound('weapon series', 'gameId', $data->seriesId, $entityName . 's');
+
+					$weapon->setSeries($series);
+				} else
+					$weapon->setSeries(null);
 
 				$this->process($context, $weapon, $data);
 				$context->batch->increment($objectCounter);

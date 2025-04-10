@@ -75,12 +75,11 @@
 					continue;
 				}
 
-				$fn = $importer instanceof ImporterInterface ? [$importer, 'import'] : $importer;
+				$fn = $importer instanceof ImporterInterface ? $importer->import(...) : $importer;
 				$fn($context);
 
 				// Ensure we've cleaned up an importer's progress bar, if there is one.
 				$context->progressFinish();
-
 				$batch->dispatch();
 
 				$context->progressIndicator->finish('Finished ' . $displayName, '<info>✓</>');

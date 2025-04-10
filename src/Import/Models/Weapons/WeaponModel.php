@@ -54,4 +54,7 @@
 		public array $specials;
 
 		public CraftingModel $crafting;
+
+		#[SerializedName('series_id')]
+		public ?int $seriesId;
 	}
