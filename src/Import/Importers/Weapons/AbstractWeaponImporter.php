@@ -134,6 +134,8 @@
 				}
 
 				if ($data->seriesId !== null) {
+					$objectCounter += 1;
+
 					$series = $this->entityManager->getRepository(WeaponSeries::class)->findOneBy(
 						[
 							'gameId' => $data->seriesId,
@@ -183,7 +185,10 @@
 				$crafting = $weapon->getCrafting();
 				$objectCounter += 1;
 
-				$crafting->setCraftable($data->isShortcut || $data->previousId === null);
+				$crafting
+					->setRow($data->row)
+					->setColumn($data->column)
+					->setCraftable($data->isShortcut || $data->previousId === null);
 
 				$crafting->getCraftingMaterials()->clear();
 				$crafting->getUpgradeMaterials()->clear();

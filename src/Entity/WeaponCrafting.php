@@ -68,6 +68,12 @@
 		#[ORM\Column(options: ['unsigned' => true])]
 		private int $upgradeZennyCost = 0;
 
+		#[ORM\Column(name: '`column`', options: ['unsigned' => true])]
+		private int $column = 0;
+
+		#[ORM\Column(name: '`row`', options: ['unsigned' => true])]
+		private int $row = 0;
+
 		public function __construct(Weapon $weapon) {
 			$this->weapon = $weapon;
 
@@ -125,6 +131,24 @@
 
 		public function setUpgradeZennyCost(int $upgradeZennyCost): static {
 			$this->upgradeZennyCost = $upgradeZennyCost;
+			return $this;
+		}
+
+		public function getColumn(): int {
+			return $this->column;
+		}
+
+		public function setColumn(int $column): static {
+			$this->column = $column;
+			return $this;
+		}
+
+		public function getRow(): int {
+			return $this->row;
+		}
+
+		public function setRow(int $row): static {
+			$this->row = $row;
 			return $this;
 		}
 	}
