@@ -15,6 +15,7 @@
 	use Symfony\Component\Console\Input\InputOption;
 	use Symfony\Component\Console\Output\ConsoleOutputInterface;
 	use Symfony\Component\Console\Output\OutputInterface;
+	use Symfony\Component\DependencyInjection\Attribute\Autowire;
 	use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
 
 	#[AsCommand(
@@ -26,6 +27,8 @@
 			protected EntityManagerInterface $entityManager,
 			#[AutowireIterator(AsImporter::TAG)]
 			protected iterable $importers,
+			#[Autowire(env: 'resolve:IMPORT_TIMESTAMP_FILE')]
+			protected string $lastImportFilePath,
 		) {
 			parent::__construct();
 		}
@@ -84,6 +87,8 @@
 
 				$context->progressIndicator->finish('Finished ' . $displayName, '<info>✓</>');
 			}
+
+			file_put_contents($this->lastImportFilePath, date(\DateTimeInterface::RFC3339));
 
 			return static::SUCCESS;
 		}
