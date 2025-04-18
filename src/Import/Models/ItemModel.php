@@ -1,6 +1,7 @@
 <?php
 	namespace App\Import\Models;
 
+	use App\Entity\ItemIcon;
 	use Symfony\Component\Serializer\Attribute\SerializedName;
 
 	class ItemModel {
@@ -20,4 +21,15 @@
 		 * @var ItemRecipeModel[]
 		 */
 		public array $recipes = [];
+
+		#[SerializedName('icon_id')]
+		public int $iconId;
+
+		public string $icon;
+
+		#[SerializedName('icon_color_id')]
+		public int $iconColorId;
+
+		#[SerializedName('icon_color')]
+		public string $iconColor;
 	}

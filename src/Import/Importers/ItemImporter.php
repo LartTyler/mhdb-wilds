@@ -48,6 +48,12 @@
 					->setValue($data->sellPrice)
 					->setCarryLimit($data->maxCount);
 
+				$item->getIcon()
+					->setId($data->iconId)
+					->setKind($data->icon)
+					->setColorId($data->iconColorId)
+					->setColor($data->iconColor);
+
 				if ($data->recipes)
 					$recipeData[$data->id] = $data->recipes;
 

@@ -40,6 +40,10 @@
 				} else
 					$skill->setKind($data->kind);
 
+				$skill->getIcon()
+					->setId($data->iconId)
+					->setKind($data->icon);
+
 				$strings = $this->entityManager->getRepository(Translation::class);
 
 				foreach ($data->names as $locale => $name) {

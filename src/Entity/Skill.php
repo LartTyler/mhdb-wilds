@@ -38,10 +38,15 @@
 		#[ORM\Column(nullable: true, enumType: SkillKind::class)]
 		private ?SkillKind $kind;
 
+		#[ORM\Embedded]
+		private SkillIcon $icon;
+
 		public function __construct(int $gameId, string $name, SkillKind $kind) {
 			$this->gameId = $gameId;
 			$this->name = $name;
 			$this->kind = $kind;
+
+			$this->icon = new SkillIcon();
 			$this->ranks = new ArrayCollection();
 		}
 
@@ -94,5 +99,9 @@
 				$this->getRanks()->add($rank = new SkillRank($this, $level));
 
 			return $rank;
+		}
+
+		public function getIcon(): SkillIcon {
+			return $this->icon ??= new SkillIcon();
 		}
 	}

@@ -51,11 +51,15 @@
 		#[ORM\OneToMany(mappedBy: 'output', targetEntity: ItemRecipe::class, cascade: ['all'], orphanRemoval: true)]
 		private Collection&Selectable $recipes;
 
+		#[ORM\Embedded]
+		private ItemIcon $icon;
+
 		public function __construct(int $gameId, string $name, int $rarity) {
 			$this->gameId = $gameId;
 			$this->name = $name;
 			$this->rarity = $rarity;
 
+			$this->icon = new ItemIcon();
 			$this->recipes = new ArrayCollection();
 		}
 
@@ -114,5 +118,9 @@
 		public function addRecipe(int $outputAmount): ItemRecipe {
 			$this->getRecipes()->add($recipe = new ItemRecipe($this, $outputAmount));
 			return $recipe;
+		}
+
+		public function getIcon(): ItemIcon {
+			return $this->icon ??= new ItemIcon();
 		}
 	}
