@@ -41,6 +41,8 @@
 			/** @var int[] $visitedSets */
 			$visitedSets = [];
 
+			$strings = $this->entityManager->getRepository(Translation::class);
+
 			/** @var SeriesModel $data */
 			foreach ($importData as $data) {
 				$context->progressAdvance();
@@ -54,9 +56,12 @@
 				);
 
 				if (!$set) {
-					$set = new ArmorSet($data->id, $data->names[Locale::English]);
+					$set = new ArmorSet($data->id, $data->getEnglishName());
 					$this->entityManager->persist($set);
 				}
+
+				foreach ($data->names as $locale => $name)
+					$strings->translate($set, 'name', $locale, $name);
 
 				if ($data->setBonus)
 					$set->setBonus($this->bonus($data->setBonus, $stagedBonuses));
