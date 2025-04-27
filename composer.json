@@ -78,6 +78,7 @@
             "@composer dump-env prod",
             "@db:migrate -n"
         ],
+        "run-imports": "@php bin/console app:import imports/output/merged",
         "db:force-reset-database": [
             "@php bin/console doctrine:database:drop --force",
             "@php bin/console doctrine:database:create"
