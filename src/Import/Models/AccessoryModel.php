@@ -22,4 +22,10 @@
 		 * @var array<int, int>
 		 */
 		public array $skills;
+
+		#[SerializedName('icon_color')]
+		public string $iconColor;
+
+		#[SerializedName('icon_color_id')]
+		public int $iconColorId;
 	}

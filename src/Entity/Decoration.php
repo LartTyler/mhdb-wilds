@@ -55,6 +55,9 @@
 		#[ORM\JoinTable(name: 'decoration_skills')]
 		private Collection&Selectable $skills;
 
+		#[ORM\Embedded]
+		private DecorationIcon $icon;
+
 		public function __construct(int $gameId, string $name, int $slot, int $rarity, DecorationKind $kind) {
 			$this->gameId = $gameId;
 			$this->name = $name;
@@ -63,6 +66,7 @@
 			$this->kind = $kind;
 
 			$this->skills = new ArrayCollection();
+			$this->icon = new DecorationIcon();
 		}
 
 		public function getName(): ?string {
@@ -124,5 +128,9 @@
 		 */
 		public function getSkills(): Selectable&Collection {
 			return $this->skills;
+		}
+
+		public function getIcon(): DecorationIcon {
+			return $this->icon ??= new DecorationIcon();
 		}
 	}

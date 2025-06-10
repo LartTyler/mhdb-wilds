@@ -55,6 +55,9 @@
 				}
 
 				$deco->setValue($data->price);
+				$deco->getIcon()
+					->setColor($data->iconColor)
+					->setColorId($data->iconColorId);
 
 				$strings = $this->entityManager->getRepository(Translation::class);
 
