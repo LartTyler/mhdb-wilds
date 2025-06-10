@@ -50,8 +50,7 @@
 		/**
 		 * @var MonsterPartModel[]
 		 */
-		#[SerializedName('breakable_parts')]
-		public array $breakableParts;
+		public array $parts;
 
 		/**
 		 * @var MonsterRewardModel[]

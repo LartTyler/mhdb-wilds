@@ -98,8 +98,17 @@
 		/**
 		 * @var Selectable<MonsterPart>&Collection<MonsterPart>
 		 */
-		#[ORM\OneToMany(mappedBy: 'monster', targetEntity: MonsterPart::class, cascade: ['all'], orphanRemoval: true)]
+		#[ORM\ManyToMany(targetEntity: MonsterPart::class)]
+		#[ORM\JoinTable(name: 'deprecated_monster_breakable_parts')]
+		#[ORM\InverseJoinColumn(unique: true)]
+		#[\Deprecated('Deprecated in favor of Monster::$parts')]
 		private Collection&Selectable $breakableParts;
+
+		/**
+		 * @var Selectable<MonsterPart>&Collection<MonsterPart>
+		 */
+		#[ORM\OneToMany(mappedBy: 'monster', targetEntity: MonsterPart::class, cascade: ['all'], orphanRemoval: true)]
+		private Collection&Selectable $parts;
 
 		/**
 		 * @var Element[]
@@ -120,6 +129,7 @@
 			$this->weaknesses = new ArrayCollection();
 			$this->rewards = new ArrayCollection();
 			$this->variants = new ArrayCollection();
+			$this->parts = new ArrayCollection();
 			$this->breakableParts = new ArrayCollection();
 		}
 
@@ -290,7 +300,23 @@
 		/**
 		 * @return Selectable<MonsterPart>&Collection<MonsterPart>
 		 */
+		#[\Deprecated('Use Monster::getParts() instead')]
 		public function getBreakableParts(): Collection&Selectable {
 			return $this->breakableParts;
+		}
+
+		/**
+		 * @return Collection<MonsterPart>&Selectable<MonsterPart>
+		 */
+		public function getParts(): Selectable&Collection {
+			return $this->parts;
+		}
+
+		public function getPart(string $kind): ?MonsterPart {
+			$criteria = Criteria::create()
+				->where(Criteria::expr()->eq('part', $kind))
+				->setMaxResults(1);
+
+			return $this->getParts()->matching($criteria)->first() ?: null;
 		}
 	}

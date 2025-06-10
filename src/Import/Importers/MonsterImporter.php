@@ -196,12 +196,17 @@
 				);
 
 				$monster->getBreakableParts()->clear();
+				$monster->getParts()->clear();
 
-				foreach ($data->breakableParts as $partData) {
-					$part = new MonsterPart($monster, $partData->part, $partData->getEnglishName());
+				foreach ($data->parts as $partData) {
+					$part = new MonsterPart($monster, $partData->part);
+					$part
+						->setHealth($partData->health)
+						->setKinsectEssence($partData->kinsectEssence);
 
-					foreach ($partData->names as $locale => $name)
-						$strings->translate($part, 'name', $locale, $name);
+					$partData->multipliers->populate($part->getMultipliers());
+
+					$monster->getParts()->add($part);
 				}
 
 				$monster->getRewards()->clear();
@@ -225,13 +230,28 @@
 						$rewardData->chance,
 					);
 
-					if (isset($rewardData->part))
+					if (isset($rewardData->part)) {
 						$cond->setPart($rewardData->part);
+
+						// NOTE Deprecated, to be removed once breakableParts is removed.
+						$part = $monster->getPart($rewardData->part);
+
+						if (!$part) {
+							throw ImportException::notFound(
+								'monster part',
+								'kind',
+								$rewardData->part,
+								'monster rewards',
+							);
+						}
+
+						$monster->getBreakableParts()->add($part);
+					}
 
 					$reward->getConditions()->add($cond);
 				}
 
-				$context->batch->increment(count($data->breakableParts) + count($data->rewards) + 1);
+				$context->batch->increment(count($data->parts) + count($data->rewards) + 1);
 			}
 
 			$context->batch->dispatch();
