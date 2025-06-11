@@ -16,6 +16,7 @@
 		basePath: '/decorations',
 		strict: [
 			'skills' => [
+				'name',
 				'skill' => [
 					'*',
 					'-id',
