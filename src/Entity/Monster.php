@@ -98,15 +98,6 @@
 		/**
 		 * @var Selectable<MonsterPart>&Collection<MonsterPart>
 		 */
-		#[ORM\ManyToMany(targetEntity: MonsterPart::class)]
-		#[ORM\JoinTable(name: 'deprecated_monster_breakable_parts')]
-		#[ORM\InverseJoinColumn(unique: true)]
-		#[\Deprecated('Deprecated in favor of Monster::$parts')]
-		private Collection&Selectable $breakableParts;
-
-		/**
-		 * @var Selectable<MonsterPart>&Collection<MonsterPart>
-		 */
 		#[ORM\OneToMany(mappedBy: 'monster', targetEntity: MonsterPart::class, cascade: ['all'], orphanRemoval: true)]
 		private Collection&Selectable $parts;
 
@@ -130,7 +121,6 @@
 			$this->rewards = new ArrayCollection();
 			$this->variants = new ArrayCollection();
 			$this->parts = new ArrayCollection();
-			$this->breakableParts = new ArrayCollection();
 		}
 
 		public function getSize(): MonsterSize {
@@ -295,14 +285,6 @@
 				$this->getVariants()->remove($key);
 
 			return $this;
-		}
-
-		/**
-		 * @return Selectable<MonsterPart>&Collection<MonsterPart>
-		 */
-		#[\Deprecated('Use Monster::getParts() instead')]
-		public function getBreakableParts(): Collection&Selectable {
-			return $this->breakableParts;
 		}
 
 		/**

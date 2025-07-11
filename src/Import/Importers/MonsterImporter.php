@@ -195,7 +195,6 @@
 					],
 				);
 
-				$monster->getBreakableParts()->clear();
 				$monster->getParts()->clear();
 
 				foreach ($data->parts as $partData) {
@@ -230,23 +229,8 @@
 						$rewardData->chance,
 					);
 
-					if (isset($rewardData->part)) {
+					if (isset($rewardData->part))
 						$cond->setPart($rewardData->part);
-
-						// NOTE Deprecated, to be removed once breakableParts is removed.
-						$part = $monster->getPart($rewardData->part);
-
-						if (!$part) {
-							throw ImportException::notFound(
-								'monster part',
-								'kind',
-								$rewardData->part,
-								'monster rewards',
-							);
-						}
-
-						$monster->getBreakableParts()->add($part);
-					}
 
 					$reward->getConditions()->add($cond);
 				}
