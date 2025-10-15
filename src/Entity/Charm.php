@@ -35,6 +35,9 @@
 		#[ORM\OneToMany(mappedBy: 'charm', targetEntity: CharmRank::class, cascade: ['all'], orphanRemoval: true)]
 		private Collection&Selectable $ranks;
 
+		#[ORM\Column]
+		private bool $random = false;
+
 		public function __construct(int $gameId) {
 			$this->gameId = $gameId;
 			$this->ranks = new ArrayCollection();
@@ -62,6 +65,15 @@
 			foreach ($matched as $key => $_)
 				$this->getRanks()->remove($key);
 
+			return $this;
+		}
+
+		public function isRandom(): bool {
+			return $this->random;
+		}
+
+		public function setRandom(bool $isRandom): static {
+			$this->random = $isRandom;
 			return $this;
 		}
 	}

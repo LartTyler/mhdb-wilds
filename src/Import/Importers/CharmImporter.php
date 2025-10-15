@@ -43,6 +43,8 @@
 					$this->entityManager->persist($charm);
 				}
 
+				$charm->setRandom($data->random);
+
 				// An array of levels visited while importing ranks.
 				/** @var int[] $visited */
 				$visited = [];
