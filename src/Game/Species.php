@@ -23,4 +23,5 @@
 		case Construct = 'construct';
 		case Wingdrake = 'wingdrake';
 		case DemiElder = 'demi-elder';
+		case Machine = 'machine';
 	}
