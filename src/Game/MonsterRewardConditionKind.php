@@ -13,4 +13,5 @@
 		case CarveRottenSevered = 'carve-rotten-severed';
 		case TemperedWoundDestroyed = 'tempered-wound-destroyed';
 		case CarveCrystallized = 'carve-crystallized';
+		case BrokenFragment = 'broken-fragment';
 	}
