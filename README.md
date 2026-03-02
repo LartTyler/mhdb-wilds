@@ -4,7 +4,7 @@
 This is the source code for the Monster Hunter Wilds database project, forked from
 [mhdb-core](https://github.com/LartTyler/mhdb-core). This repository does not contain any actual data; if you're looking
 for the sources used to populate the API, they can be found
-[here](https://github.com/LartTyler/mhdb-wilds-data/output/merged).
+[here](https://github.com/LartTyler/mhdb-wilds-data/tree/main/output/merged).
 
 API usage documentation can be found at [https://docs.wilds.mhdb.io](https://docs.wilds.mhdb.io).
 
