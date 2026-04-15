@@ -35,6 +35,9 @@
 		#[ORM\Column(type: Types::TEXT, nullable: true)]
 		private ?string $description = null;
 
+		#[ORM\Column(type: Types::SMALLINT, nullable: true)]
+		private ?int $setPiecesRequired = null;
+
 		public function __construct(Skill $skill, int $level) {
 			$this->skill = $skill;
 			$this->level = $level;
@@ -68,6 +71,15 @@
 
 		public function setDescription(?string $description): static {
 			$this->description = $description;
+			return $this;
+		}
+
+		public function getSetPiecesRequired(): ?int {
+			return $this->setPiecesRequired;
+		}
+
+		public function setSetPiecesRequired(?int $setPiecesRequired): static {
+			$this->setPiecesRequired = $setPiecesRequired;
 			return $this;
 		}
 	}

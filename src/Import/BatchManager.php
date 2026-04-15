@@ -37,6 +37,10 @@
 			return $this->hook = new BatchDispatchHook($callback, $this->unhook(...));
 		}
 
+		public function group(): BatchGroup {
+			return new BatchGroup($this);
+		}
+
 		protected function unhook(): void {
 			$this->hook = null;
 		}

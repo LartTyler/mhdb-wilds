@@ -13,6 +13,7 @@
 	use App\Game\Rank;
 	use App\I18n\Locale;
 	use App\Import\AsImporter;
+	use App\Import\BatchGroup;
 	use App\Import\ImportContext;
 	use App\Import\ImportException;
 	use App\Import\Models\ArmorModel;
@@ -45,6 +46,7 @@
 
 			/** @var SeriesModel $data */
 			foreach ($importData as $data) {
+				$batchGroup = $context->batch->group();
 				$context->progressAdvance();
 
 				$visitedSets[] = $data->id;
@@ -55,26 +57,58 @@
 					],
 				);
 
+				$batchGroup->increment();
+
 				if (!$set) {
 					$set = new ArmorSet($data->id, $data->getEnglishName());
 					$this->entityManager->persist($set);
 				}
 
-				foreach ($data->names as $locale => $name)
+				foreach ($data->names as $locale => $name) {
 					$strings->translate($set, 'name', $locale, $name);
+					$batchGroup->increment();
+				}
 
-				if ($data->setBonus)
-					$set->setBonus($this->bonus($data->setBonus, $stagedBonuses));
+				if ($data->setBonus) {
+					$bonus = $this->bonus($data->setBonus, $stagedBonuses, $batchGroup);
+
+					$set->setBonus($bonus);
+					$batchGroup->increment($bonus->getRanks()->count() + 1);
+				}
+
+				if ($data->setBonusId) {
+					$skill = $this->entityManager->getRepository(Skill::class)->findOneByGameId($data->setBonusId);
+
+					if (!$skill)
+						throw ImportException::notFound('setBonus', 'game ID', $data->setBonusId, 'armor sets');
+
+					$set->setSetBonusSkill($skill);
+				}
 
 				if ($data->groupBonus)
-					$set->setGroupBonus($this->bonus($data->groupBonus, $stagedBonuses));
+					$set->setGroupBonus($this->bonus($data->groupBonus, $stagedBonuses, $batchGroup));
+
+				if ($data->groupBonusId) {
+					$skill = $this->entityManager->getRepository(Skill::class)->findOneByGameId($data->groupBonusId);
+
+					if (!$skill) {
+						throw ImportException::notFound(
+							'groupBonusSkill',
+							'game ID',
+							$data->groupBonusId,
+							'armor sets',
+						);
+					}
+
+					$set->setGroupBonusSkill($skill);
+				}
 
 				// An array of armor kinds visited while importing pieces.
 				/** @var ArmorKind[] $visitedPieces */
 				$visitedPieces = [];
 
 				foreach ($data->pieces as $armorData) {
-					$piece = $this->piece($set, $armorData, $data->rarity);
+					$piece = $this->piece($set, $armorData, $data->rarity, $batchGroup);
 					$visitedPieces[] = $piece->getKind();
 				}
 
@@ -90,17 +124,7 @@
 						->execute();
 				}
 
-				$context->batch->increment(
-					($set->getBonus() ? $set->getBonus()->getRanks()->count() + 1 : 0) +
-					($set->getGroupBonus() ? $set->getGroupBonus()->getRanks()->count() + 1 : 0) +
-					array_sum(
-						array_map(
-							fn(ArmorModel $data) => count($data->names) + count($data->descriptions) + 1,
-							$data->pieces,
-						),
-					) +
-					count($data->names) + 1,
-				);
+				$batchGroup->finish();
 			}
 
 			$context->batch->dispatch();
@@ -115,8 +139,9 @@
 				->execute();
 		}
 
-		protected function piece(ArmorSet $set, ArmorModel $data, int $rarity): Armor {
+		protected function piece(ArmorSet $set, ArmorModel $data, int $rarity, BatchGroup $batchGroup): Armor {
 			$armor = $set->getPiece($data->kind);
+			$batchGroup->increment();
 
 			if (!$armor) {
 				$armor = new Armor($data->kind, Rank::guess($rarity), $rarity, $data->names[Locale::English]);
@@ -146,9 +171,12 @@
 
 			foreach ($data->names as $locale => $name) {
 				$strings->translate($armor, 'name', $locale, Strings::clean($name));
+				$batchGroup->increment();
 
-				if ($desc = $data->descriptions[$locale])
+				if ($desc = $data->descriptions[$locale]) {
 					$strings->translate($armor, 'description', $locale, Strings::clean($desc));
+					$batchGroup->increment();
+				}
 			}
 
 			// An array of skill ranks visited while building the armor's skills list, keyed by skill rank ID.
@@ -166,6 +194,7 @@
 					throw ImportException::notFound('skill', 'game ID', $skillId, 'armor skills');
 
 				$rank = $skill->getRank($level);
+				$batchGroup->increment(2);
 
 				if (!$rank) {
 					throw ImportException::notFound(
@@ -214,6 +243,8 @@
 				if (!$item)
 					throw ImportException::notFound('item', 'game ID', $itemId, 'armor crafting');
 
+				$batchGroup->increment();
+
 				$material = $crafting->getOrAddMaterial($item, $amount);
 				$visited[$material->getItem()->getId()] = true;
 			}
@@ -223,8 +254,10 @@
 
 			/** @var MaterialCost $material */
 			foreach ($crafting->getMaterials() as $material) {
-				if (!isset($visited[$material->getItem()->getId()]))
+				if (!isset($visited[$material->getItem()->getId()])) {
 					$this->entityManager->remove($material);
+					$batchGroup->increment();
+				}
 			}
 
 			$crafting->removeMaterials(...$toRemove);
@@ -235,10 +268,11 @@
 		/**
 		 * @param SeriesBonusModel          $data
 		 * @param array<int, ArmorSetBonus> $stagedBonuses
+		 * @param BatchGroup                $batchGroup
 		 *
 		 * @return ArmorSetBonus
 		 */
-		protected function bonus(SeriesBonusModel $data, array &$stagedBonuses): ArmorSetBonus {
+		protected function bonus(SeriesBonusModel $data, array &$stagedBonuses, BatchGroup $batchGroup): ArmorSetBonus {
 			$skill = $this->entityManager->getRepository(Skill::class)->findOneBy(
 				[
 					'gameId' => $data->skill,
@@ -247,6 +281,8 @@
 
 			if (!$skill)
 				throw ImportException::notFound('skill', 'game ID', $data->skill, 'set bonus');
+
+			$batchGroup->increment();
 
 			$bonus = $this->entityManager->getRepository(ArmorSetBonus::class)->findOneBy(
 				[
@@ -283,12 +319,16 @@
 
 				$rank = $bonus->getOrCreateRank($rankData->pieces, $skillRank);
 				$visited[$rank->getPieces()] = true;
+
+				$batchGroup->increment();
 			}
 
 			/** @var ArmorSetBonusRank $rank */
 			foreach ($bonus->getRanks() as $rank) {
-				if (!isset($visited[$rank->getPieces()]))
+				if (!isset($visited[$rank->getPieces()])) {
 					$this->entityManager->remove($rank);
+					$batchGroup->increment();
+				}
 			}
 
 			return $bonus;

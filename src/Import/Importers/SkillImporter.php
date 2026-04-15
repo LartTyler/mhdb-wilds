@@ -24,6 +24,7 @@
 			$visitedIds = [];
 
 			foreach ($importData as $data) {
+				$batchGroup = $context->batch->group();
 				$context->progressAdvance();
 
 				$visitedIds[] = $data->id;
@@ -33,6 +34,8 @@
 						'gameId' => $data->id,
 					],
 				);
+
+				$batchGroup->increment();
 
 				if (!$skill) {
 					$skill = new Skill($data->id, $data->names[Locale::English], $data->kind);
@@ -48,10 +51,13 @@
 
 				foreach ($data->names as $locale => $name) {
 					$strings->translate($skill, 'name', $locale, Strings::clean($name));
+					$batchGroup->increment();
 
 					// Group skills do not include top-level descriptions.
-					if (isset($data->descriptions) && $desc = $data->descriptions[$locale])
+					if (isset($data->descriptions) && $desc = $data->descriptions[$locale]) {
 						$strings->translate($skill, 'description', $locale, Strings::clean($desc));
+						$batchGroup->increment();
+					}
 				}
 
 				// We need to keep track of which levels we saw during importing, so we can purge an levels that weren't
@@ -59,32 +65,34 @@
 				/** @var array<int, bool> $visitedLevels */
 				$visitedLevels = [];
 
-				$rankObjects = 0;
-
 				foreach ($data->ranks as $rankData) {
 					$visitedLevels[$rankData->level] = true;
-					$rank = $skill->getOrCreateRank($rankData->level);
+					$rank = $skill->getOrCreateRank($rankData)
+						->setSetPiecesRequired($rankData->setPiecesRequired);
+
+					$batchGroup->increment();
 
 					foreach ($rankData->descriptions as $locale => $desc) {
 						$strings->translate($rank, 'description', $locale, Strings::clean($desc));
+						$batchGroup->increment();
 
 						// Only set bonus skills appear to have names.
-						if (isset($rankData->names) && $name = $rankData->names[$locale] ?? null)
+						if (isset($rankData->names) && $name = $rankData->names[$locale] ?? null) {
 							$strings->translate($rank, 'name', $locale, Strings::clean($name));
+							$batchGroup->increment();
+						}
 					}
-
-					$rankObjects += count($rankData->descriptions) + 1;
 				}
 
 				/** @var SkillRank $rank */
 				foreach ($skill->getRanks() as $rank) {
 					if (!isset($visitedLevels[$rank->getLevel()])) {
 						$this->entityManager->remove($rank);
-						$rankObjects += 1;
+						$batchGroup->increment();
 					}
 				}
 
-				$context->batch->increment(count($data->names) + count($data->descriptions ?? []) + $rankObjects + 1);
+				$batchGroup->finish();
 			}
 
 			$context->batch->dispatch();

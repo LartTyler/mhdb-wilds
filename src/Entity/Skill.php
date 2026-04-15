@@ -2,6 +2,8 @@
 	namespace App\Entity;
 
 	use App\Game\SkillKind;
+	use App\Import\Models\SkillRankModel;
+	use App\Repository\SkillRepository;
 	use DaybreakStudios\RestBundle\Entity\AsCrudEntity;
 	use DaybreakStudios\Utility\DoctrineEntities\EntityInterface;
 	use Doctrine\Common\Collections\ArrayCollection;
@@ -12,7 +14,7 @@
 	use Doctrine\ORM\Mapping as ORM;
 	use Gedmo\Mapping\Annotation\Translatable;
 
-	#[ORM\Entity]
+	#[ORM\Entity(repositoryClass: SkillRepository::class)]
 	#[ORM\Table(name: 'skills')]
 	#[AsCrudEntity(
 		basePath: '/skills',
@@ -92,11 +94,11 @@
 			return $this->getRanks()->matching($criteria)->first() ?: null;
 		}
 
-		public function getOrCreateRank(int $level): SkillRank {
-			$rank = $this->getRank($level);
+		public function getOrCreateRank(SkillRankModel $rankData): SkillRank {
+			$rank = $this->getRank($rankData->level);
 
 			if (!$rank)
-				$this->getRanks()->add($rank = new SkillRank($this, $level));
+				$this->getRanks()->add($rank = new SkillRank($this, $rankData->level));
 
 			return $rank;
 		}

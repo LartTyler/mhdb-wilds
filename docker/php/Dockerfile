@@ -17,7 +17,6 @@ COPY --from=composer /usr/bin/composer /usr/bin/composer
 RUN mkdir /.composer && \
     chmod 777 -R /.composer
 
-COPY ./fpm_pool.conf /usr/local/etc/php-fpm.d/www.conf
 COPY ./xdebug.ini /usr/local/etc/php/conf.d
 
 RUN mkdir -p /var/www/html/var && \
